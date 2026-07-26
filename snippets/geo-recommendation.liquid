@@ -44,7 +44,8 @@
             endif
           endfor
         %}
-        {{ 'general.geo_recommendation.message_html'
+        {{
+          'general.geo_recommendation.message_html'
           | t: country: detected_country, language: detected_lang_name, currency: detected_currency
         }}
       </p>
@@ -175,7 +176,7 @@
 {% endstylesheet %}
 
 {% javascript %}
-  (function() {
+  (function () {
     var STORAGE_KEY = 'shop_locale_prefs';
     var DISMISSED_KEY = 'geo_recommendation_dismissed';
     var banner = document.querySelector('[data-geo-recommendation]');
@@ -232,11 +233,11 @@
     // Handle accept: apply recommended language/currency
     var acceptBtn = banner.querySelector('[data-geo-accept]');
     if (acceptBtn) {
-      acceptBtn.addEventListener('click', function() {
+      acceptBtn.addEventListener('click', function () {
         var prefs = {
           language: detectedLanguage,
           currency: detectedCurrency,
-          set_at: new Date().toISOString()
+          set_at: new Date().toISOString(),
         };
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
@@ -244,7 +245,7 @@
 
         // Hide banner with animation
         banner.classList.add('geo-recommendation--hidden');
-        setTimeout(function() {
+        setTimeout(function () {
           banner.style.display = 'none';
         }, 300);
 
@@ -256,13 +257,13 @@
     // Handle dismiss: hide banner without changing settings
     var dismissBtn = banner.querySelector('[data-geo-dismiss]');
     if (dismissBtn) {
-      dismissBtn.addEventListener('click', function() {
+      dismissBtn.addEventListener('click', function () {
         try {
           sessionStorage.setItem(DISMISSED_KEY, 'true');
         } catch (e) {}
 
         banner.classList.add('geo-recommendation--hidden');
-        setTimeout(function() {
+        setTimeout(function () {
           banner.style.display = 'none';
         }, 300);
       });

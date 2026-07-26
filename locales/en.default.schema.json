@@ -43,9 +43,12 @@
   "labels": {
     "alignment": "Alignment",
     "background": "Background",
+    "cards_section": "Cards",
+    "columns_desktop": "Columns on desktop",
     "foreground": "Foreground",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
+    "hero_section": "Hero section",
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
     "menu": "Menu",
@@ -53,6 +56,8 @@
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
+    "rounded_corners": "Rounded corners",
+    "show_icon": "Show icon",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
     "text": "Text"
@@ -62,6 +67,10 @@
       "left": "Left",
       "center": "Center",
       "right": "Right"
+    },
+    "columns": {
+      "two": "Two",
+      "three": "Three"
     },
     "direction": {
       "horizontal": "Horizontal",
