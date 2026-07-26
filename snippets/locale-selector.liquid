@@ -1,0 +1,175 @@
+{% doc %}
+  Renders a language or currency selector.
+
+  Uses Shopify's {% form 'localization' %} for reliable locale switching.
+  Supports both liquid and JS modes.
+
+  @param {string} type - "language" or "currency"
+  @param {string} [position] - "header" or "footer"
+  @param {string} [style] - "dropdown" or "inline"
+
+  @example
+  {% render 'locale-selector', type: 'language', position: 'header' %}
+{% enddoc %}
+
+{% liquid
+  if type == 'language'
+    assign label = 'general.locale.language_label' | t
+    assign current = localization.language.iso_code
+    assign param_name = 'language_code'
+    assign options_source = localization.available_languages
+  else
+    assign label = 'general.locale.currency_label' | t
+    assign current = localization.country.iso_code
+    assign param_name = 'country_code'
+    assign options_source = localization.available_countries
+  endif
+%}
+
+<div class="locale-selector locale-selector--{{ type }} locale-selector--{{ style | default: 'dropdown' }} locale-selector--{{ position | default: 'footer' }}"
+     data-locale-type="{{ type }}"
+     data-default-locale="{{ localization.default_language.iso_code }}">
+  {%- form 'localization' -%}
+    <input type="hidden" name="return_to" value="{{ request.path }}" data-return-to>
+
+    <label for="locale-select-{{ type }}-{{ position | default: 'footer' }}" class="visually-hidden">
+      {{ label }}
+    </label>
+
+    <select
+      id="locale-select-{{ type }}-{{ position | default: 'footer' }}"
+      name="{{ param_name }}"
+      class="locale-selector__select"
+      data-locale-select="{{ type }}"
+      aria-label="{{ label }}"
+    >
+      {%- if type == 'language' -%}
+        {%- for language in options_source -%}
+          <option value="{{ language.iso_code }}"{% if language.iso_code == current %} selected{% endif %}>
+            {{ language.endonym_name }}
+          </option>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for country in options_source -%}
+          {%- assign currency = country.currency -%}
+          <option value="{{ country.iso_code }}"{% if country.iso_code == current %} selected{% endif %}>
+            {{ currency.iso_code }} ({{ currency.symbol }})
+          </option>
+        {%- endfor -%}
+      {%- endif -%}
+    </select>
+
+    <noscript>
+      <button type="submit" class="locale-selector__submit">
+        {%- if type == 'language' -%}
+          {{ 'general.locale.switch_language' | t: name: '' }}
+        {%- else -%}
+          {{ 'general.locale.switch_currency' | t: name: '', code: '' }}
+        {%- endif -%}
+      </button>
+    </noscript>
+  {%- endform -%}
+</div>
+
+{% stylesheet %}
+  .locale-selector {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .locale-selector__form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .locale-selector__select {
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: var(--font-primary--family);
+    font-size: var(--locale-select-font-size);
+    padding: var(--locale-select-padding);
+    border: 1px solid var(--locale-select-border-color);
+    border-radius: var(--style-border-radius-inputs);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 0.75rem;
+    max-width: 100%;
+  }
+  .locale-selector__select:focus-visible {
+    outline: var(--locale-select-focus-ring);
+    outline-offset: 2px;
+  }
+  .locale-selector__submit {
+    font-family: var(--font-primary--family);
+    font-size: var(--locale-select-font-size);
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--locale-select-border-color);
+    border-radius: var(--style-border-radius-inputs);
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    cursor: pointer;
+  }
+  .locale-selector__submit:focus-visible {
+    outline: var(--locale-select-focus-ring);
+    outline-offset: 2px;
+  }
+  .locale-selector--header { margin: 0 0.5rem; }
+  .locale-selector--footer { margin: 0 0.5rem; }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  @media screen and (max-width: 749px) {
+    .locale-selector__select {
+      font-size: calc(var(--locale-select-font-size) - 0.0625rem);
+      padding: 0.375rem 1.75rem 0.375rem 0.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function() {
+    var STORAGE_KEY = 'shop_locale_prefs';
+
+    function savePrefs(language, currency) {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        var prefs = raw ? JSON.parse(raw) : {};
+        if (language) prefs.language = language;
+        if (currency) prefs.currency = currency;
+        prefs.set_at = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+      } catch (e) {}
+    }
+
+    document.querySelectorAll('[data-locale-select]').forEach(function(select) {
+      var form = select.closest('form');
+      if (!form) return;
+
+      // Fix return_to with query string
+      var returnTo = form.querySelector('[data-return-to]');
+      if (returnTo) {
+        returnTo.value = window.location.pathname + window.location.search;
+      }
+
+      // Auto-submit on change
+      select.addEventListener('change', function() {
+        var type = select.getAttribute('data-locale-type');
+        if (type === 'language') savePrefs(select.value, null);
+        if (type === 'currency') savePrefs(null, select.value);
+        form.submit();
+      });
+    });
+  })();
+{% endjavascript %}

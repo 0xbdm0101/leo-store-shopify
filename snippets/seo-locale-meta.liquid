@@ -1,0 +1,43 @@
+{% doc %}
+  Outputs hreflang tags and Open Graph locale meta tags for multi-language SEO.
+
+  Iterates over all available languages to generate alternate links for search
+  engines, plus og:locale tags for social media sharing. Skips output entirely
+  when only one language is configured.
+
+  Must be included in the <head> of layout/theme.liquid.
+
+  @example
+  {% render 'seo-locale-meta' %}
+{% enddoc %}
+
+{%- assign language_count = localization.available_languages | size -%}
+
+{%- if language_count > 1 -%}
+  {%- assign current_language = localization.language.iso_code -%}
+  {%- assign current_url = canonical_url -%}
+  {%- assign locale_prefix = '/' | append: current_language | append: '/' -%}
+
+  {%- for language in localization.available_languages -%}
+    {%- assign locale = language.iso_code -%}
+    {%- if locale == localization.default_language.iso_code -%}
+      {%- assign alternate_url = current_url | replace: locale_prefix, '/' -%}
+    {%- else -%}
+      {%- assign prefix = '/' | append: locale | append: '/' -%}
+      {%- assign alternate_url = current_url | replace: locale_prefix, prefix -%}
+    {%- endif -%}
+    <link rel="alternate" hreflang="{{ locale }}" href="{{ alternate_url }}">
+  {%- endfor -%}
+
+  {%- assign default_url = current_url | replace: locale_prefix, '/' -%}
+  <link rel="alternate" hreflang="x-default" href="{{ default_url }}">
+
+  <meta property="og:locale" content="{{ current_language }}">
+
+  {%- for language in localization.available_languages -%}
+    {%- assign locale = language.iso_code -%}
+    {%- if locale != current_language -%}
+    <meta property="og:locale:alternate" content="{{ locale }}">
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}

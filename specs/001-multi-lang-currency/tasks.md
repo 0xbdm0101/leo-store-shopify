@@ -18,9 +18,9 @@
 
 **Purpose**: 项目结构初始化和基础配置
 
-- [ ] T001 Create project structure per plan.md (ensure `snippets/`, `blocks/`, `assets/` directories exist)
-- [ ] T002 [P] Add CSS custom properties for locale selectors in `snippets/css-variables.liquid` (`--locale-select-font-size`, `--locale-select-padding`, `--locale-select-border-color`, `--locale-select-focus-ring`)
-- [ ] T003 [P] Add all required translation keys to `locales/en.default.json` (general.locale.*, general.geo_recommendation.*)
+- [x] T001 Create project structure per plan.md (ensure `snippets/`, `blocks/`, `assets/` directories exist)
+- [x] T002 [P] Add CSS custom properties for locale selectors in `snippets/css-variables.liquid` (`--locale-select-font-size`, `--locale-select-padding`, `--locale-select-border-color`, `--locale-select-focus-ring`)
+- [x] T003 [P] Add all required translation keys to `locales/en.default.json` (general.locale.*, general.geo_recommendation.*)
 
 ---
 
@@ -30,9 +30,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create Chinese translations in `locales/zh-CN.json` (all keys from en.default.json translated to Chinese)
-- [ ] T005 [P] Create French translations in `locales/fr.json` (all keys from en.default.json translated to French)
-- [ ] T006 Verify all translation keys exist across all 3 locale files using `shopify theme check`
+- [x] T004 [P] Create Chinese translations in `locales/zh-CN.json` (all keys from en.default.json translated to Chinese)
+- [x] T005 [P] Create French translations in `locales/fr.json` (all keys from en.default.json translated to French)
+- [x] T006 Verify all translation keys exist across all 3 locale files using `shopify theme check`
 
 **Checkpoint**: 翻译基础设施就绪 — 所有 User Story 可以开始
 
@@ -46,13 +46,13 @@
 
 ### Implementation for US1 & US2
 
-- [ ] T007 [P] [US1] Create `snippets/locale-selector.liquid` with `{% doc %}` header, Liquid logic to fetch `localization.available_languages` and `localization.available_countries`, produce `<form>` + `<select>` with native names and symbols per contract `contracts/locale-selector.md`
-- [ ] T008 [P] [US1] Add component-scoped styles in `snippets/locale-selector.liquid` using `{% stylesheet %}` (mobile-first, dropdown and inline variants, focus-visible ring, 200% zoom support)
-- [ ] T009 [P] [US1] Add progressive enhancement JS in `snippets/locale-selector.liquid` using `{% javascript %}` (intercept form submit for async currency update via `/cart/update.js`, emit `locale:switched` custom event)
-- [ ] T010 [P] [US2] Implement JS fallback: `<noscript>` submit button inside the form for language/currency switching when JS is disabled
-- [ ] T011 [US1] Create `blocks/locale-selector-block.liquid` with `{% doc %}` header and `{% schema %}` (settings: `type` [language/currency/both], `style` [dropdown/inline], `display_label` [show/hide]); render `locale-selector` snippet with block settings
-- [ ] T012 [US1] Update `layout/theme.liquid` to render `seo-locale-meta` snippet in `<head>` (placeholder for Phase 6)
-- [ ] T013 [US2] Add translation keys for currency switch success/failure announcements to `locales/en.default.json` (`general.locale.currency_changed`, `general.locale.currency_error`)
+- [x] T007 [P] [US1] Create `snippets/locale-selector.liquid` with `{% doc %}` header, Liquid logic to fetch `localization.available_languages` and `localization.available_countries`, produce `<form>` + `<select>` with native names and symbols per contract `contracts/locale-selector.md`
+- [x] T008 [P] [US1] Add component-scoped styles in `snippets/locale-selector.liquid` using `{% stylesheet %}` (mobile-first, dropdown and inline variants, focus-visible ring, 200% zoom support)
+- [x] T009 [P] [US1] Add progressive enhancement JS in `snippets/locale-selector.liquid` using `{% javascript %}` (intercept form submit for async currency update via `/cart/update.js`, emit `locale:switched` custom event)
+- [x] T010 [P] [US2] Implement JS fallback: `<noscript>` submit button inside the form for language/currency switching when JS is disabled
+- [x] T011 [US1] Create `blocks/locale-selector-block.liquid` with `{% doc %}` header and `{% schema %}` (settings: `type` [language/currency/both], `style` [dropdown/inline], `display_label` [show/hide]); render `locale-selector` snippet with block settings
+- [x] T012 [US1] Update `layout/theme.liquid` to render `seo-locale-meta` snippet in `<head>` (placeholder for Phase 6)
+- [x] T013 [US2] Add translation keys for currency switch success/failure announcements to `locales/en.default.json` (`general.locale.currency_changed`, `general.locale.currency_error`)
 
 **Checkpoint**: MVP 完成 — 用户可通过选择器切换语言和货币，JS 禁用时可用表单降级
 
@@ -66,10 +66,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Create `snippets/geo-recommendation.liquid` with `{% doc %}` header, Liquid logic to compare `localization.country` detection vs saved preference/localStorage, per contract `contracts/geo-recommendation.md`
-- [ ] T015 [P] [US3] Add component styles in `snippets/geo-recommendation.liquid` using `{% stylesheet %}` (non-intrusive banner: sticky top or inline, dismissible, slide-out animation)
-- [ ] T016 [P] [US3] Add interaction JS in `snippets/geo-recommendation.liquid` using `{% javascript %}` (accept: apply recommendations + save prefs + close; dismiss: close only + set dismissed flag)
-- [ ] T017 [US3] Integrate `geo-recommendation` snippet into `layout/theme.liquid` (render after header, before main content)
+- [x] T014 [US3] Create `snippets/geo-recommendation.liquid` with `{% doc %}` header, Liquid logic to compare `localization.country` detection vs saved preference/localStorage, per contract `contracts/geo-recommendation.md`
+- [x] T015 [P] [US3] Add component styles in `snippets/geo-recommendation.liquid` using `{% stylesheet %}` (non-intrusive banner: sticky top or inline, dismissible, slide-out animation)
+- [x] T016 [P] [US3] Add interaction JS in `snippets/geo-recommendation.liquid` using `{% javascript %}` (accept: apply recommendations + save prefs + close; dismiss: close only + set dismissed flag)
+- [x] T017 [US3] Integrate `geo-recommendation` snippet into `layout/theme.liquid` (render after header, before main content)
 
 **Checkpoint**: 首次访问用户看到地理位置推荐，老用户不被打扰
 
@@ -83,10 +83,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T018 [US4] Implement localStorage read/write logic in `snippets/locale-selector.liquid` `{% javascript %}` (read `shop_locale_prefs` on load, apply saved prefs if not expired; write on change with `set_at` timestamp)
-- [ ] T019 [US4] Add 30-day expiry check: if `set_at` > 30 days ago, clear preference and fall back to geolocation detection
-- [ ] T020 [US4] Wire preference read into `geo-recommendation.liquid` display logic (if saved pref exists and not expired → skip recommendation; otherwise → show)
-- [ ] T021 [P] [US4] Add translation keys for preference-related UI messages to `locales/en.default.json` (`general.locale.preference_saved`, `general.locale.preference_expired`)
+- [x] T018 [US4] Implement localStorage read/write logic in `snippets/locale-selector.liquid` `{% javascript %}` (read `shop_locale_prefs` on load, apply saved prefs if not expired; write on change with `set_at` timestamp)
+- [x] T019 [US4] Add 30-day expiry check: if `set_at` > 30 days ago, clear preference and fall back to geolocation detection
+- [x] T020 [US4] Wire preference read into `geo-recommendation.liquid` display logic (if saved pref exists and not expired → skip recommendation; otherwise → show)
+- [x] T021 [P] [US4] Add translation keys for preference-related UI messages to `locales/en.default.json` (`general.locale.preference_saved`, `general.locale.preference_expired`)
 
 **Checkpoint**: 回访用户体验完整 — 偏好自动恢复，过期自动重置
 
@@ -100,10 +100,10 @@
 
 ### Implementation for User Story 5
 
-- [ ] T022 [US5] Create `snippets/seo-locale-meta.liquid` with `{% doc %}` header, logic to iterate `localization.available_languages` and output `<link rel="alternate" hreflang="...">` tags + `x-default`, per contract `contracts/seo-meta.md`
-- [ ] T023 [US5] Add Open Graph locale tags to `snippets/seo-locale-meta.liquid` (`og:locale` for current language, `og:locale:alternate` for each other language)
-- [ ] T024 [US5] Ensure `canonical_url` correctly replaces locale prefix when generating alternate URLs
-- [ ] T025 [US5] Handle edge case: if only 1 language configured, output no hreflang tags (not needed for monolingual sites)
+- [x] T022 [US5] Create `snippets/seo-locale-meta.liquid` with `{% doc %}` header, logic to iterate `localization.available_languages` and output `<link rel="alternate" hreflang="...">` tags + `x-default`, per contract `contracts/seo-meta.md`
+- [x] T023 [US5] Add Open Graph locale tags to `snippets/seo-locale-meta.liquid` (`og:locale` for current language, `og:locale:alternate` for each other language)
+- [x] T024 [US5] Ensure `canonical_url` correctly replaces locale prefix when generating alternate URLs
+- [x] T025 [US5] Handle edge case: if only 1 language configured, output no hreflang tags (not needed for monolingual sites)
 
 **Checkpoint**: 多语言 SEO 完整 — hreflang + OG 标签正确输出
 
@@ -117,11 +117,11 @@
 
 ### Implementation for User Story 6
 
-- [ ] T026 [US6] Audit and fix `snippets/locale-selector.liquid` accessibility: `<label>` correctly associated with `<select>`, `aria-describedby` linked to status region, `aria-live="polite"` status announcements
-- [ ] T027 [US6] Audit and fix `snippets/geo-recommendation.liquid` accessibility: `role="region"` with `aria-label`, dismiss button has screen-reader-only label
-- [ ] T028 [P] [US6] Verify color contrast ratios (text ≥ 4.5:1, borders/icons ≥ 3:1) in both components using axe-core or browser DevTools
-- [ ] T029 [P] [US6] Add `:focus-visible` styles for keyboard navigation on all interactive elements (select, buttons)
-- [ ] T030 [US6] Test at 200% browser zoom — ensure no text clipping or overlap in selectors and recommendation banner
+- [x] T026 [US6] Audit and fix `snippets/locale-selector.liquid` accessibility: `<label>` correctly associated with `<select>`, `aria-describedby` linked to status region, `aria-live="polite"` status announcements
+- [x] T027 [US6] Audit and fix `snippets/geo-recommendation.liquid` accessibility: `role="region"` with `aria-label`, dismiss button has screen-reader-only label
+- [x] T028 [P] [US6] Verify color contrast ratios (text ≥ 4.5:1, borders/icons ≥ 3:1) in both components using axe-core or browser DevTools
+- [x] T029 [P] [US6] Add `:focus-visible` styles for keyboard navigation on all interactive elements (select, buttons)
+- [x] T030 [US6] Test at 200% browser zoom — ensure no text clipping or overlap in selectors and recommendation banner
 
 **Checkpoint**: 无障碍达标 — WCAG 2.1 AA 自动检测通过
 
@@ -131,11 +131,11 @@
 
 **Purpose**: 跨 User Story 的优化和文档
 
-- [ ] T031 [P] Add `{% doc %}` header audit: verify all 3 new snippets have complete LiquidDoc with @param, @example
-- [ ] T032 [P] Verify schema.json validates: `blocks/locale-selector-block.liquid` schema passes `schemas/theme_block.json`
-- [ ] T033 Run `shopify theme check` — fix any Liquid syntax errors, missing translation keys, or schema warnings
-- [ ] T034 Run through all 7 validation scenarios in `quickstart.md` and document results
-- [ ] T035 [P] Performance check: verify page load not increased by >50ms with selectors rendered, currency prices update <1s
+- [x] T031 [P] Add `{% doc %}` header audit: verify all 3 new snippets have complete LiquidDoc with @param, @example
+- [x] T032 [P] Verify schema.json validates: `blocks/locale-selector-block.liquid` schema passes `schemas/theme_block.json`
+- [x] T033 Run `shopify theme check` — fix any Liquid syntax errors, missing translation keys, or schema warnings
+- [x] T034 Run through all 7 validation scenarios in `quickstart.md` and document results
+- [x] T035 [P] Performance check: verify page load not increased by >50ms with selectors rendered, currency prices update <1s
 
 ---
 

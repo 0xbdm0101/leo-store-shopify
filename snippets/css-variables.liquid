@@ -14,5 +14,11 @@
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+
+    {% # Locale selector variables %}
+    --locale-select-font-size: 0.875rem;
+    --locale-select-padding: 0.5rem 2rem 0.5rem 0.75rem;
+    --locale-select-border-color: var(--color-foreground);
+    --locale-select-focus-ring: 2px solid var(--color-foreground);
   }
 {% endstyle %}

@@ -1,0 +1,85 @@
+{% doc %}
+  Renders a locale selector block (language or currency) that merchants can
+  add to sections via the theme editor.
+
+  Supports placement in any section that accepts blocks.
+
+  @example
+  {% content_for 'block', type: 'locale-selector', id: 'locale-selector-header' %}
+{% enddoc %}
+
+{% liquid
+  assign selector_type = block.settings.type | default: 'language'
+  assign selector_style = block.settings.style | default: 'dropdown'
+%}
+
+<div
+  class="locale-selector-block"
+  {{ block.shopify_attributes }}
+>
+  {% if selector_type == 'both' %}
+    {% render 'locale-selector', type: 'language', position: block.settings.position, style: selector_style %}
+    {% render 'locale-selector', type: 'currency', position: block.settings.position, style: selector_style %}
+  {% else %}
+    {% render 'locale-selector', type: selector_type, position: block.settings.position, style: selector_style %}
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .locale-selector-block {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.locale.language_label",
+  "settings": [
+    {
+      "type": "select",
+      "id": "type",
+      "label": "t:general.locale.switch_language",
+      "default": "both",
+      "options": [
+        { "value": "language", "label": "t:general.locale.language_label" },
+        { "value": "currency", "label": "t:general.locale.currency_label" },
+        { "value": "both", "label": "t:general.locale.switch_language" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "t:labels.text_style",
+      "default": "dropdown",
+      "options": [
+        { "value": "dropdown", "label": "t:options.text_style.normal" },
+        { "value": "inline", "label": "t:options.text_style.subtitle" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "t:labels.alignment",
+      "default": "footer",
+      "options": [
+        { "value": "header", "label": "t:options.direction.horizontal" },
+        { "value": "footer", "label": "t:options.direction.vertical" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.locale.language_label",
+      "category": "t:general.locale.preference_saved",
+      "settings": {
+        "type": "both",
+        "style": "dropdown",
+        "position": "footer"
+      }
+    }
+  ]
+}
+{% endschema %}

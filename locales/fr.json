@@ -1,0 +1,96 @@
+{
+  "404": {
+    "title": "404",
+    "not_found": "Page introuvable.",
+    "back_to_shopping": "Retour à la boutique"
+  },
+  "blog": {
+    "article_comments": "Commentaires",
+    "article_metadata_html": "{{ date }} par {{ author }}",
+    "comment_form_body": "Commentaire",
+    "comment_form_email": "E-mail",
+    "comment_form_name": "Nom",
+    "comment_form_submit": "Publier",
+    "comment_form_title": "Ajouter un commentaire"
+  },
+  "cart": {
+    "checkout": "Commander",
+    "title": "Panier",
+    "update": "Mettre à jour",
+    "remove": "Retirer"
+  },
+  "customers": {
+    "login": {
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "title": "Connexion"
+    }
+  },
+  "collections": {
+    "title": "Collections"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Ajouter à Apple Wallet",
+    "card": "Carte cadeau",
+    "expired": "Cette carte cadeau a expiré",
+    "expires_on": "Expire le {{ expires_on }}",
+    "use_at_checkout": "Utiliser cette carte cadeau à la caisse"
+  },
+  "password": {
+    "title": "Cette boutique est privée",
+    "password": "Mot de passe",
+    "enter": "Entrer"
+  },
+  "general": {
+    "hello_world": "Hello World",
+    "locale": {
+      "language_label": "Langue",
+      "currency_label": "Devise",
+      "switch_language": "Changer la langue en {{ name }}",
+      "switch_currency": "Changer la devise en {{ name }} ({{ code }})",
+      "language_changed": "Langue changée en {{ name }}",
+      "currency_changed": "Devise changée en {{ name }}",
+      "currency_error": "Échec de la mise à jour de la devise. Veuillez réessayer.",
+      "preference_saved": "Vos préférences ont été enregistrées",
+      "preference_expired": "Vos préférences enregistrées ont expiré"
+    },
+    "geo_recommendation": {
+      "title": "Localisation détectée",
+      "message_html": "Nous avons détecté que vous êtes en {{ country }}. Passer à {{ language }} / {{ currency }} ?",
+      "accept": "Changer",
+      "dismiss": "Ignorer"
+    }
+  },
+  "search": {
+    "title": "Rechercher",
+    "placeholder": "Rechercher des articles, pages ou produits",
+    "submit": "Rechercher",
+    "no_results_html": "Aucun résultat trouvé pour {{ terms }}",
+    "results_for_html": "{{ count }} résultats trouvés pour {{ terms }}"
+  },
+  "home": {
+    "hero": {
+      "title": "Bonjour le monde !",
+      "description": "Le thème Skeleton est un thème Shopify minimal et soigneusement structuré conçu pour vous aider à démarrer rapidement. Conçu avec modularité, maintenabilité et les meilleures pratiques de Shopify.",
+      "description2": "Les thèmes façonnent l'expérience de boutique en ligne pour les marchands et leurs clients. Créez des thèmes rapides et flexibles à grande échelle en utilisant Liquid, le langage de template de Shopify, ainsi que HTML, CSS, JavaScript et JSON."
+    },
+    "sections": {
+      "key_concepts": {
+        "title": "Concepts clés",
+        "description": "Les thèmes Shopify sont un ensemble de fichiers de template, de blocs de construction et de ressources. Utilisez ces blocs pour créer des thèmes modulaires et personnalisables.",
+        "link_text": "En savoir plus sur les concepts clés"
+      },
+      "liquid": {
+        "title": "Liquid",
+        "description": "Le langage de template Liquid est la colonne vertébrale des thèmes Shopify. Il est utilisé pour charger du contenu dynamique sur les boutiques. Étendez les objets Liquid pour stocker et présenter des données personnalisées via les metafields.",
+        "link_text": "Voir la référence Liquid"
+      },
+      "best_practices": {
+        "title": "Bonnes pratiques",
+        "description": "Pour optimiser votre expérience de développement de thème, Shopify a établi un ensemble de bonnes pratiques que vous pouvez consulter lors du développement de votre thème et de la configuration de vos outils.",
+        "link_text": "Suivre les bonnes pratiques"
+      }
+    }
+  }
+}

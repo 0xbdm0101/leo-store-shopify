@@ -42,11 +42,55 @@
     "password": "Password",
     "enter": "Enter"
   },
+  "general": {
+    "hello_world": "Hello World",
+    "locale": {
+      "language_label": "Language",
+      "currency_label": "Currency",
+      "switch_language": "Switch language to {{ name }}",
+      "switch_currency": "Switch currency to {{ name }} ({{ code }})",
+      "language_changed": "Language changed to {{ name }}",
+      "currency_changed": "Currency changed to {{ name }}",
+      "currency_error": "Failed to update currency. Please try again.",
+      "preference_saved": "Your preferences have been saved",
+      "preference_expired": "Your saved preferences have expired"
+    },
+    "geo_recommendation": {
+      "title": "Location detected",
+      "message_html": "We've detected you're in {{ country }}. Switch to {{ language }} / {{ currency }}?",
+      "accept": "Switch",
+      "dismiss": "Dismiss"
+    }
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search articles, pages, or products",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "home": {
+    "hero": {
+      "title": "Hello, World!",
+      "description": "The Skeleton theme is a minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.",
+      "description2": "Themes shape the online store experience for merchants and their customers. Build fast, flexible themes at scale using Liquid, Shopify's theme templating language, along with HTML, CSS, JavaScript, and JSON."
+    },
+    "sections": {
+      "key_concepts": {
+        "title": "Key Concepts",
+        "description": "Shopify themes are a package of template files, building blocks, and supporting assets. Use these building blocks to create modular, customizable themes.",
+        "link_text": "Learn more about key concepts"
+      },
+      "liquid": {
+        "title": "Liquid",
+        "description": "The Liquid templating language is the backbone of Shopify themes, and is used to load dynamic content on storefronts. Extend Liquid objects to store and present custom data using metafields.",
+        "link_text": "View the Liquid reference"
+      },
+      "best_practices": {
+        "title": "Best Practices",
+        "description": "To optimize your theme development experience, Shopify has established a set of best practices that you can refer to when developing your theme and setting up your toolchains and processes.",
+        "link_text": "Follow best practices"
+      }
+    }
   }
 }

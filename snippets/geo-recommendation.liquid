@@ -1,0 +1,271 @@
+{% doc %}
+  Renders a non-intrusive geo-recommendation banner when the user's detected
+  location differs from their saved preferences.
+
+  Compares Shopify's IP-detected country/currency/language with localStorage
+  preferences. Only shown on first visit or when preferences have expired.
+
+  @example
+  {% render 'geo-recommendation' %}
+{% enddoc %}
+
+{% liquid
+  assign detected_country = localization.country.name
+  assign detected_language = localization.language.iso_code
+  assign detected_currency = localization.country.currency.iso_code
+  assign show_banner = false
+
+  # Check if store has multiple languages or currencies to recommend
+  if localization.available_languages.size > 1 or localization.available_countries.size > 1
+    assign show_banner = true
+  endif
+%}
+
+{% if show_banner %}
+  <aside
+    class="geo-recommendation"
+    role="region"
+    aria-label="{{ 'general.geo_recommendation.title' | t }}"
+    data-geo-recommendation
+    data-detected-language="{{ detected_language }}"
+    data-detected-currency="{{ detected_currency }}"
+    data-current-language="{{ localization.language.iso_code }}"
+    data-current-currency="{{ localization.country.currency.iso_code }}"
+    style="display: none;"
+  >
+    <div class="geo-recommendation__content page-width">
+      <p class="geo-recommendation__message">
+        {% liquid
+          assign detected_lang_name = ''
+          for language in localization.available_languages
+            if language.iso_code == detected_language
+              assign detected_lang_name = language.endonym_name
+              break
+            endif
+          endfor
+        %}
+        {{ 'general.geo_recommendation.message_html'
+          | t: country: detected_country, language: detected_lang_name, currency: detected_currency
+        }}
+      </p>
+      <div class="geo-recommendation__actions">
+        <button
+          type="button"
+          class="geo-recommendation__accept"
+          data-geo-accept
+        >
+          {{ 'general.geo_recommendation.accept' | t }}
+        </button>
+        <button
+          type="button"
+          class="geo-recommendation__dismiss"
+          data-geo-dismiss
+          aria-label="{{ 'general.geo_recommendation.dismiss' | t }}"
+        >
+          <span aria-hidden="true">&times;</span>
+          <span class="visually-hidden">{{ 'general.geo_recommendation.dismiss' | t }}</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+{% endif %}
+
+{% stylesheet %}
+  .geo-recommendation {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+  }
+
+  .geo-recommendation__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .geo-recommendation__message {
+    margin: 0;
+    text-align: center;
+    flex: 1 1 auto;
+  }
+
+  .geo-recommendation__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .geo-recommendation__accept {
+    font-family: var(--font-primary--family);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-background);
+    border-radius: var(--style-border-radius-inputs);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .geo-recommendation__accept:hover {
+    opacity: 0.9;
+  }
+
+  .geo-recommendation__accept:focus-visible {
+    outline: 2px solid var(--color-background);
+    outline-offset: 2px;
+  }
+
+  .geo-recommendation__dismiss {
+    font-family: var(--font-primary--family);
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 0.25rem;
+    border: none;
+    background: none;
+    color: var(--color-background);
+    cursor: pointer;
+    opacity: 0.8;
+  }
+
+  .geo-recommendation__dismiss:hover {
+    opacity: 1;
+  }
+
+  .geo-recommendation__dismiss:focus-visible {
+    outline: 2px solid var(--color-background);
+    outline-offset: 2px;
+  }
+
+  /* Slide-out animation when dismissed */
+  .geo-recommendation--hidden {
+    animation: geo-slide-up 0.3s ease forwards;
+  }
+
+  @keyframes geo-slide-up {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .geo-recommendation__content {
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0 1rem;
+    }
+
+    .geo-recommendation__message {
+      font-size: 0.8125rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function() {
+    var STORAGE_KEY = 'shop_locale_prefs';
+    var DISMISSED_KEY = 'geo_recommendation_dismissed';
+    var banner = document.querySelector('[data-geo-recommendation]');
+    if (!banner) return;
+
+    function getStoredPrefs() {
+      try {
+        var data = localStorage.getItem(STORAGE_KEY);
+        if (!data) return null;
+        var prefs = JSON.parse(data);
+        var setAt = new Date(prefs.set_at);
+        var now = new Date();
+        var daysSinceSet = (now - setAt) / (1000 * 60 * 60 * 24);
+        if (daysSinceSet > 30) {
+          localStorage.removeItem(STORAGE_KEY);
+          return null;
+        }
+        return prefs;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function isDismissed() {
+      try {
+        var dismissed = sessionStorage.getItem(DISMISSED_KEY);
+        return dismissed === 'true';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Determine if banner should be shown
+    var prefs = getStoredPrefs();
+    var detectedLanguage = banner.getAttribute('data-detected-language');
+    var detectedCurrency = banner.getAttribute('data-detected-currency');
+
+    var shouldShow = false;
+
+    if (!prefs && !isDismissed()) {
+      // First visit with no saved preferences
+      var currentLanguage = banner.getAttribute('data-current-language');
+      var currentCurrency = banner.getAttribute('data-current-currency');
+      // Show if detected differs from default (store default)
+      if (detectedLanguage !== currentLanguage || detectedCurrency !== currentCurrency) {
+        shouldShow = true;
+      }
+    }
+
+    if (shouldShow) {
+      banner.style.display = 'block';
+    }
+
+    // Handle accept: apply recommended language/currency
+    var acceptBtn = banner.querySelector('[data-geo-accept]');
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', function() {
+        var prefs = {
+          language: detectedLanguage,
+          currency: detectedCurrency,
+          set_at: new Date().toISOString()
+        };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+        } catch (e) {}
+
+        // Hide banner with animation
+        banner.classList.add('geo-recommendation--hidden');
+        setTimeout(function() {
+          banner.style.display = 'none';
+        }, 300);
+
+        // Reload to apply new locale/currency
+        window.location.reload();
+      });
+    }
+
+    // Handle dismiss: hide banner without changing settings
+    var dismissBtn = banner.querySelector('[data-geo-dismiss]');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', function() {
+        try {
+          sessionStorage.setItem(DISMISSED_KEY, 'true');
+        } catch (e) {}
+
+        banner.classList.add('geo-recommendation--hidden');
+        setTimeout(function() {
+          banner.style.display = 'none';
+        }, 300);
+      });
+    }
+  })();
+{% endjavascript %}

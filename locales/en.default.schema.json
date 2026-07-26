@@ -17,7 +17,14 @@
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
+    "hello_world": "Hello World",
     "layout": "Layout",
+    "locale": {
+      "language_label": "Language",
+      "currency_label": "Currency",
+      "switch_language": "Language or currency",
+      "preference_saved": "Locale preferences"
+    },
     "main": "Main",
     "page": "Page",
     "password": "Password",
@@ -72,6 +79,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }
