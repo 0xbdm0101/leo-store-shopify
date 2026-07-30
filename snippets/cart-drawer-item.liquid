@@ -1,0 +1,84 @@
+{% doc %}
+  Renders a single line item row inside the Ajax cart drawer.
+
+  @param {object} item - Shopify cart line item object
+  @param {number} item_index - 1-based index of the line item in the cart loop
+
+  @example
+  {% render 'cart-drawer-item', item: item, item_index: forloop.index %}
+{% enddoc %}
+
+<div class="cart-drawer-item" data-line-item-key="{{ item.key }}" data-variant-id="{{ item.id }}">
+  <div class="cart-drawer-item__image-wrapper">
+    {%- if item.image -%}
+      <img src="{{ item.image | image_url: width: 140, height: 140, crop: 'center' }}"
+           alt="{{ item.image.alt | default: item.title | escape }}"
+           class="cart-drawer-item__image"
+           width="70"
+           height="70"
+           loading="lazy">
+    {%- else -%}
+      <div class="cart-drawer-item__image-placeholder"></div>
+    {%- endif -%}
+  </div>
+
+  <div class="cart-drawer-item__details">
+    <a href="{{ item.url }}" class="cart-drawer-item__title">{{ item.product.title | escape }}</a>
+
+    {%- unless item.product.has_only_default_variant -%}
+      <div class="cart-drawer-item__variant-title">{{ item.variant.title | escape }}</div>
+    {%- endunless -%}
+
+    {%- if item.line_level_discount_allocations.size > 0 -%}
+      <ul class="cart-drawer-item__discounts" role="list">
+        {%- for discount in item.line_level_discount_allocations -%}
+          <li class="cart-drawer-item__discount-tag">
+            🏷️ {{ discount.discount_application.title }} (-{{ discount.amount | money }})
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <div class="cart-drawer-item__price-row">
+      <div class="cart-drawer-item__price">
+        {%- if item.original_line_price != item.final_line_price -%}
+          <s class="cart-drawer-item__original-price">{{ item.original_line_price | money }}</s>
+          <span class="cart-drawer-item__final-price">{{ item.final_line_price | money }}</span>
+        {%- else -%}
+          <span class="cart-drawer-item__final-price">{{ item.final_line_price | money }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="cart-drawer-item__quantity-controls">
+        <button type="button"
+                class="cart-drawer-item__qty-btn cart-drawer-item__qty-btn--minus"
+                data-action="decrement"
+                aria-label="Decrease quantity for {{ item.title | escape }}">
+          &minus;
+        </button>
+        
+        <input type="number"
+               class="cart-drawer-item__qty-input"
+               value="{{ item.quantity }}"
+               min="0"
+               data-key="{{ item.key }}"
+               aria-label="Quantity for {{ item.title | escape }}">
+
+        <button type="button"
+                class="cart-drawer-item__qty-btn cart-drawer-item__qty-btn--plus"
+                data-action="increment"
+                aria-label="Increase quantity for {{ item.title | escape }}">
+          &plus;
+        </button>
+      </div>
+    </div>
+
+    <button type="button"
+            class="cart-drawer-item__remove-btn"
+            data-action="remove"
+            data-key="{{ item.key }}"
+            aria-label="Remove {{ item.title | escape }}">
+      {{ 'cart.remove' | t }}
+    </button>
+  </div>
+</div>

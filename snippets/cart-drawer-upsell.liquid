@@ -1,0 +1,49 @@
+{% doc %}
+  Renders an upsell product card inside the Ajax cart drawer recommendations section.
+
+  @param {object} product - Shopify product object to recommend
+  @param {object} cart - Shopify cart object (used to check if item is already in cart)
+
+  @example
+  {% render 'cart-drawer-upsell', product: product, cart: cart %}
+{% enddoc %}
+
+{%- liquid
+  assign first_variant = product.selected_or_first_available_variant
+  assign is_in_cart = false
+  for item in cart.items
+    if item.product_id == product.id
+      assign is_in_cart = true
+      break
+    endif
+  endfor
+-%}
+
+{%- unless is_in_cart or first_variant == nil or first_variant.available == false -%}
+  <div class="cart-drawer-upsell-card" data-variant-id="{{ first_variant.id }}">
+    <div class="cart-drawer-upsell-card__image-wrapper">
+      {%- if product.featured_media -%}
+        <img src="{{ product.featured_media | image_url: width: 100, height: 100, crop: 'center' }}"
+             alt="{{ product.featured_media.alt | default: product.title | escape }}"
+             class="cart-drawer-upsell-card__image"
+             width="50"
+             height="50"
+             loading="lazy">
+      {%- else -%}
+        <div class="cart-drawer-upsell-card__placeholder"></div>
+      {%- endif -%}
+    </div>
+
+    <div class="cart-drawer-upsell-card__info">
+      <a href="{{ product.url }}" class="cart-drawer-upsell-card__title">{{ product.title | escape }}</a>
+      <div class="cart-drawer-upsell-card__price">{{ first_variant.price | money }}</div>
+    </div>
+
+    <button type="button"
+            class="cart-drawer-upsell-card__add-btn"
+            data-action="add-upsell"
+            data-variant-id="{{ first_variant.id }}">
+      {{ 'cart.drawer.add_to_cart' | t }}
+    </button>
+  </div>
+{%- endunless -%}
