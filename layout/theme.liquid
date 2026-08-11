@@ -27,6 +27,7 @@
     {% render 'seo-locale-meta' %}
 
     {{ content_for_header }}
+    {% render 'theme-cart-utils' %}
   </head>
 
   <body>
@@ -46,5 +47,6 @@
     {% sections 'footer-group' %}
 
     {% section 'cart-drawer' %}
+    {% section 'quick-view-modal' %}
   </body>
 </html>

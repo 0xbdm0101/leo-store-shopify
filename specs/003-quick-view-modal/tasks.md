@@ -15,8 +15,8 @@
 
 **目标**：建立国际化翻译词条与模块骨架
 
-- [ ] T001 在 `locales/en.default.json` 中添加 `products.product.quick_view` 及快速预览相关的国际化字典
-- [ ] T002 [P] 创建模块骨架文件 `sections/quick-view-modal.liquid` 并初始化基本 `{% schema %}` 配置
+- [x] T001 在 `locales/en.default.json` 中添加 `products.product.quick_view` 及快速预览相关的国际化字典
+- [x] T002 [P] 创建模块骨架文件 `sections/quick-view-modal.liquid` 并初始化基本 `{% schema %}` 配置
 
 ---
 
@@ -24,9 +24,9 @@
 
 **目标**：构建 Quick View 弹窗外层容器、背景蒙层 HTML 与基础 JavaScript 控制器
 
-- [ ] T003 在 `sections/quick-view-modal.liquid` 中构建 Modal 外层容器与背景蒙层 HTML 结构
-- [ ] T004 [P] 在 `sections/quick-view-modal.liquid` 的 `{% stylesheet %}` 中编写弹窗淡入淡出动画、背景蒙层高斯模糊与响应式布局
-- [ ] T005 在 `sections/quick-view-modal.liquid` 的 `{% javascript %}` 中实现 `QuickViewModal` 控制器，处理 Section Rendering API 异步拉取、展开/关闭状态与 `Escape` 键监听
+- [x] T003 在 `sections/quick-view-modal.liquid` 中构建 Modal 外层容器与背景蒙层 HTML 结构
+- [x] T004 [P] 在 `sections/quick-view-modal.liquid` 的 `{% stylesheet %}` 中编写弹窗淡入淡出动画、背景蒙层高斯模糊与响应式布局
+- [x] T005 在 `sections/quick-view-modal.liquid` 的 `{% javascript %}` 中实现 `QuickViewModal` 控制器，处理 Section Rendering API 异步拉取、展开/关闭状态与 `Escape` 键监听
 
 **检查点**：基础容器就绪，弹窗能够接收商品 Handle 并渲染开闭。
 
@@ -40,9 +40,9 @@
 
 ### 用户故事 1 实现任务
 
-- [ ] T006 [US1] 在 `sections/collection.liquid` 的商品卡片上添加带有 `data-action="quick-view"` 与 `data-handle` 的触发按钮
-- [ ] T007 [US1] 在 `sections/quick-view-modal.liquid` 的 `{% javascript %}` 中绑定列表页触发按钮的全局点击事件，发起 `/products/<handle>?section_id=quick-view-modal` 请求
-- [ ] T008 [US1] 根据 `specs/003-quick-view-modal/quickstart.md` 的场景 1 验证用户故事 1 的功能
+- [x] T006 [US1] 在 `sections/collection.liquid` 的商品卡片上添加带有 `data-action="quick-view"` 与 `data-handle` 的触发按钮
+- [x] T007 [US1] 在 `sections/quick-view-modal.liquid` 的 `{% javascript %}` 中绑定列表页触发按钮的全局点击事件，发起 `/products/<handle>?section_id=quick-view-modal` 请求
+- [x] T008 [US1] 根据 `specs/003-quick-view-modal/quickstart.md` 的场景 1 验证用户故事 1 的功能
 
 **检查点**：用户故事 1 MVP 核心完成并可独立测试。
 
@@ -56,10 +56,10 @@
 
 ### 用户故事 2 实现任务
 
-- [ ] T009 [P] [US2] 在 `sections/quick-view-modal.liquid` 中构建多图展示区（主图 + 缩略图列表），并绑定点击切换主图逻辑
-- [ ] T010 [US2] 在 `sections/quick-view-modal.liquid` 内部嵌入变体 JSON 数据 (`<script type="application/json">`)
-- [ ] T011 [US2] 在 `sections/quick-view-modal.liquid` 的 `{% javascript %}` 中实现变体选择器监听事件，实时匹配 JSON 数据并更新主图、售价、划线原价与加购按钮禁用/激活状态
-- [ ] T012 [US2] 根据 `specs/003-quick-view-modal/quickstart.md` 的场景 2 验证用户故事 2 的功能
+- [x] T009 [P] [US2] 在 `sections/quick-view-modal.liquid` 中构建多图展示区（主图 + 缩略图列表），并绑定点击切换主图逻辑
+- [x] T010 [US2] 在 `sections/quick-view-modal.liquid` 内部嵌入变体 JSON 数据 (`<script type="application/json">`)
+- [x] T011 [US2] 在 `sections/quick-view-modal.liquid` 的 `{% javascript %}` 中实现变体选择器监听事件，实时匹配 JSON 数据并更新主图、售价、划线原价与加购按钮禁用/激活状态
+- [x] T012 [US2] 根据 `specs/003-quick-view-modal/quickstart.md` 的场景 2 验证用户故事 2 的功能
 
 **检查点**：用户故事 1 与用户故事 2 联动正常。
 
@@ -73,9 +73,9 @@
 
 ### 用户故事 3 实现任务
 
-- [ ] T013 [US3] 在 `sections/quick-view-modal.liquid` 中连接加购表单提交事件，加购成功后关闭弹窗并触发全局 `CartDrawer` 展开
-- [ ] T014 [US3] 在 `sections/quick-view-modal.liquid` 底部添加指向独立商品详情页 (`/products/{{ product.handle }}`) 的“查看完整详情”链接
-- [ ] T015 [US3] 根据 `specs/003-quick-view-modal/quickstart.md` 的场景 3 验证用户故事 3 的功能
+- [x] T013 [US3] 在 `sections/quick-view-modal.liquid` 中连接加购表单提交事件，加购成功后关闭弹窗并触发全局 `CartDrawer` 展开
+- [x] T014 [US3] 在 `sections/quick-view-modal.liquid` 底部添加指向独立商品详情页 (`/products/{{ product.handle }}`) 的“查看完整详情”链接
+- [x] T015 [US3] 根据 `specs/003-quick-view-modal/quickstart.md` 的场景 3 验证用户故事 3 的功能
 
 **检查点**：所有用户故事开发完成。
 
@@ -85,9 +85,9 @@
 
 **目标**：无障碍体验优化、移动端适配与端到端测试
 
-- [ ] T016 [P] 在 `sections/quick-view-modal.liquid` 中添加无障碍键盘焦点锁定（Modal 打开时焦点保留在弹窗内部）
-- [ ] T017 [P] 在 `sections/quick-view-modal.liquid` 中优化移动端小屏样式与触摸体验
-- [ ] T018 运行完整的端到端 quickstart 验证与代码清理
+- [x] T016 [P] 在 `sections/quick-view-modal.liquid` 中添加无障碍键盘焦点锁定（Modal 打开时焦点保留在弹窗内部）
+- [x] T017 [P] 在 `sections/quick-view-modal.liquid` 中优化移动端小屏样式与触摸体验
+- [x] T018 运行完整的端到端 quickstart 验证与代码清理
 
 ---
 

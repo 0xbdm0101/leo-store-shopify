@@ -165,7 +165,7 @@
 
       // Auto-submit on change
       select.addEventListener('change', function() {
-        var type = select.getAttribute('data-locale-type');
+        var type = select.getAttribute('data-locale-select') || select.getAttribute('data-locale-type');
         if (type === 'language') savePrefs(select.value, null);
         if (type === 'currency') savePrefs(null, select.value);
         form.submit();

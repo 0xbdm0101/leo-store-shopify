@@ -59,17 +59,23 @@
       {%- if section.settings.show_upsell and section.settings.upsell_collection != blank and cart.item_count > 0 -%}
         {%- assign upsell_collection = collections[section.settings.upsell_collection] -%}
         {%- if upsell_collection.products.size > 0 -%}
-          <div class="cart-drawer__upsell-section">
-            <h3 class="cart-drawer__upsell-heading">{{ 'cart.drawer.upsell_title' | t }}</h3>
-            <div class="cart-drawer__upsell-list">
-              {%- assign count = 0 -%}
-              {%- for product in upsell_collection.products -%}
-                {%- render 'cart-drawer-upsell', product: product, cart: cart -%}
-                {%- assign count = count | plus: 1 -%}
-                {%- if count >= 3 -%}{%- break -%}{%- endif -%}
-              {%- endfor -%}
+          {%- capture upsell_items_html -%}
+            {%- assign count = 0 -%}
+            {%- for product in upsell_collection.products -%}
+              {%- render 'cart-drawer-upsell', product: product, cart: cart -%}
+              {%- assign count = count | plus: 1 -%}
+              {%- if count >= 3 -%}{%- break -%}{%- endif -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+
+          {%- if upsell_items_html contains 'cart-drawer-upsell-card' -%}
+            <div class="cart-drawer__upsell-section">
+              <h3 class="cart-drawer__upsell-heading">{{ 'cart.drawer.upsell_title' | t }}</h3>
+              <div class="cart-drawer__upsell-list">
+                {{ upsell_items_html }}
+              </div>
             </div>
-          </div>
+          {%- endif -%}
         {%- endif -%}
       {%- endif -%}
     </div>
@@ -104,7 +110,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 9999;
+    z-index: 100000;
     display: flex;
     justify-content: flex-end;
     visibility: hidden;
@@ -580,26 +586,8 @@
     }
 
     async handleFormAddToCart(form) {
-      try {
-        const formData = new FormData(form);
-        formData.append('sections', 'cart-drawer');
-
-        const response = await fetch(this.getApiUrl('add'), {
-          method: 'POST',
-          body: formData
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          this.renderSection(data.sections['cart-drawer']);
-          this.open();
-        } else {
-          // Fallback if section rendering is not returned
-          await this.refreshDrawer();
-          this.open();
-        }
-      } catch (error) {
-        console.error('Error adding to cart:', error);
+      if (window.ThemeCartUtils) {
+        await window.ThemeCartUtils.submitAddToCart(form);
       }
     }
 

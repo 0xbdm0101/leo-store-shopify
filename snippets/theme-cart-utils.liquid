@@ -1,0 +1,97 @@
+{% doc %}
+  Renders global ThemeCartUtils JavaScript helper for handling Ajax cart operations,
+  button loading state transitions, and section rendering updates.
+
+  @example
+  {% render 'theme-cart-utils' %}
+{% enddoc %}
+
+<script>
+  window.ThemeCartUtils = window.ThemeCartUtils || {
+    /**
+     * Gets localized API endpoint route
+     */
+    getApiUrl(endpoint) {
+      const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+      const cleanRoot = root.endsWith('/') ? root : root + '/';
+      return cleanRoot + 'cart/' + endpoint + '.js';
+    },
+
+    /**
+     * Toggles button loading state and animated spinner
+     */
+    setButtonLoading(button, isLoading, loadingText = 'Adding...') {
+      if (!button) return;
+
+      if (isLoading) {
+        button.disabled = true;
+        button.style.opacity = '0.8';
+        button.style.cursor = 'wait';
+        if (!button.dataset.originalHtml) {
+          button.dataset.originalHtml = button.innerHTML;
+        }
+        button.innerHTML = `<span class="theme-spinner"></span> ${loadingText}`;
+      } else {
+        button.disabled = false;
+        button.style.opacity = '';
+        button.style.cursor = '';
+        if (button.dataset.originalHtml) {
+          button.innerHTML = button.dataset.originalHtml;
+          delete button.dataset.originalHtml;
+        }
+      }
+    },
+
+    /**
+     * Posts a form to /cart/add.js with section rendering support
+     */
+    async submitAddToCart(form, button) {
+      const submitBtn = button || form.querySelector('[type="submit"]') || form.querySelector('[name="add"]');
+      this.setButtonLoading(submitBtn, true);
+
+      try {
+        const formData = new FormData(form);
+        formData.append('sections', 'cart-drawer');
+
+        const response = await fetch(this.getApiUrl('add'), {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Close Quick View Modal if open
+          const quickViewModal = document.getElementById('QuickViewModal');
+          if (quickViewModal) {
+            quickViewModal.setAttribute('aria-hidden', 'true');
+          }
+
+          // Render updated cart drawer section and open drawer
+          const cartDrawer = document.getElementById('CartDrawer');
+          if (cartDrawer && data.sections && data.sections['cart-drawer']) {
+            const drawerPanel = cartDrawer.querySelector('.cart-drawer__panel');
+            if (drawerPanel) {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(data.sections['cart-drawer'], 'text/html');
+              const newPanel = doc.querySelector('.cart-drawer__panel');
+              if (newPanel) {
+                drawerPanel.innerHTML = newPanel.innerHTML;
+              }
+            }
+            cartDrawer.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+          }
+          return { success: true, data };
+        } else {
+          return { success: false, response };
+        }
+      } catch (error) {
+        console.error('Error in submitAddToCart:', error);
+        return { success: false, error };
+      } finally {
+        this.setButtonLoading(submitBtn, false);
+      }
+    }
+  };
+</script>

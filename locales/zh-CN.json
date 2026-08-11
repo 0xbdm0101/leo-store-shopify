@@ -17,7 +17,31 @@
     "checkout": "结账",
     "title": "购物车",
     "update": "更新",
-    "remove": "移除"
+    "remove": "移除",
+    "drawer": {
+      "title": "您的购物车",
+      "empty": "购物车是空的",
+      "continue_shopping": "继续购物",
+      "subtotal": "小计",
+      "taxes_and_shipping_policy_at_checkout_html": "税费和运费将在结账时计算",
+      "free_shipping_progress_html": "再添加 {{ amount }} 即可享受 <strong>免费送货！</strong>",
+      "free_shipping_unlocked": "恭喜！您已解锁免费送货！",
+      "upsell_title": "猜你喜欢 / 推荐加购",
+      "add_to_cart": "加购",
+      "adding": "添加中...",
+      "added": "已添加",
+      "close": "关闭购物车"
+    }
+  },
+  "products": {
+    "product": {
+      "quick_view": "快速预览",
+      "add_to_cart": "加入购物车",
+      "sold_out": "已售罄",
+      "unavailable": "不可用",
+      "view_full_details": "查看完整详情",
+      "close_quick_view": "关闭快速预览"
+    }
   },
   "customers": {
     "login": {
@@ -83,7 +107,7 @@
       },
       "liquid": {
         "title": "Liquid",
-        "description": "Liquid 模板语言是 Shopify 主题的支柱，用于在店铺前端加载动态内容。通过 metafields 扩展 Liquid 对象来存储和呈现自定义数据。",
+        "description": "Liquid 模板语言是 Shopify 主题的支柱，用于在店铺前端加载动态内容。扩展 Liquid 对象以使用 metafields 存储和呈现自定义数据。",
         "link_text": "查看 Liquid 参考文档"
       },
       "best_practices": {

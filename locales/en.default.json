@@ -33,6 +33,16 @@
       "close": "Close cart"
     }
   },
+  "products": {
+    "product": {
+      "quick_view": "Quick View",
+      "add_to_cart": "Add to Cart",
+      "sold_out": "Sold Out",
+      "unavailable": "Unavailable",
+      "view_full_details": "View Full Details",
+      "close_quick_view": "Close Quick View"
+    }
+  },
   "customers": {
     "login": {
       "email": "Email",

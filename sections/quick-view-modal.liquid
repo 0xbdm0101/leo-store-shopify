@@ -1,0 +1,697 @@
+{%- comment -%}
+  Quick View Modal Section - Shopify Theme 2.0
+  Allows shoppers to preview product details, switch thumbnails/variants, and add to cart without leaving the page.
+{%- endcomment -%}
+
+<div id="QuickViewModal"
+     class="quick-view-modal"
+     aria-hidden="true"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="QuickViewModalTitle">
+  
+  <div class="quick-view-modal__overlay" data-action="close-quick-view"></div>
+
+  <div class="quick-view-modal__dialog">
+    <button type="button"
+            class="quick-view-modal__close-btn"
+            data-action="close-quick-view"
+            aria-label="{{ 'products.product.close_quick_view' | t }}">
+      &times;
+    </button>
+
+    <div class="quick-view-modal__content">
+      {%- if product != blank -%}
+        {%- assign current_variant = product.selected_or_first_available_variant -%}
+
+        <div class="quick-view-product" data-product-handle="{{ product.handle }}">
+          {%- comment -%} Left: Media Gallery {%- endcomment -%}
+          <div class="quick-view-product__media">
+            <div class="quick-view-product__main-image-wrapper">
+              {%- if current_variant.featured_media -%}
+                {%- assign featured_media = current_variant.featured_media -%}
+              {%- else -%}
+                {%- assign featured_media = product.featured_media -%}
+              {%- endif -%}
+
+              {%- if featured_media -%}
+                <img id="QuickViewMainImage"
+                     src="{{ featured_media | image_url: width: 600, height: 600, crop: 'center' }}"
+                     alt="{{ featured_media.alt | default: product.title | escape }}"
+                     width="400"
+                     height="400"
+                     class="quick-view-product__main-image"
+                     loading="eager">
+              {%- else -%}
+                <div class="quick-view-product__image-placeholder"></div>
+              {%- endif -%}
+            </div>
+
+            {%- if product.media.size > 1 -%}
+              <div class="quick-view-product__thumbnails">
+                {%- for media in product.media -%}
+                  <button type="button"
+                          class="quick-view-product__thumb-btn{% if media == featured_media %} is-active{% endif %}"
+                          data-action="switch-media"
+                          data-media-url="{{ media | image_url: width: 600, height: 600, crop: 'center' }}">
+                    <img src="{{ media | image_url: width: 100, height: 100, crop: 'center' }}"
+                         alt="{{ media.alt | default: product.title | escape }}"
+                         width="50"
+                         height="50"
+                         loading="lazy">
+                  </button>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Right: Product Details & Variant Form {%- endcomment -%}
+          <div class="quick-view-product__info">
+            {%- if product.vendor != blank -%}
+              <span class="quick-view-product__vendor">{{ product.vendor | escape }}</span>
+            {%- endif -%}
+
+            <h2 id="QuickViewModalTitle" class="quick-view-product__title">
+              {{ product.title | escape }}
+            </h2>
+
+            <div class="quick-view-product__price-container">
+              <span id="QuickViewPrice" class="quick-view-product__price">
+                {{ current_variant.price | money }}
+              </span>
+              
+              <s id="QuickViewComparePrice" class="quick-view-product__compare-price{% unless current_variant.compare_at_price > current_variant.price %} is-hidden{% endunless %}">
+                {%- if current_variant.compare_at_price > current_variant.price -%}
+                  {{ current_variant.compare_at_price | money }}
+                {%- endif -%}
+              </s>
+            </div>
+
+            <div class="quick-view-product__description">
+              {{ product.description | strip_html | truncatewords: 25 }}
+            </div>
+
+            {%- comment -%} Variant Options Selection {%- endcomment -%}
+            {%- form 'product', product, id: 'QuickViewForm', class: 'quick-view-product__form' -%}
+              <input type="hidden" name="id" id="QuickViewVariantId" value="{{ current_variant.id }}">
+
+              {%- unless product.has_only_default_variant -%}
+                <div class="quick-view-product__options">
+                  {%- for option in product.options_with_values -%}
+                    <div class="quick-view-option" data-option-index="{{ forloop.index0 }}">
+                      <label class="quick-view-option__label">
+                        {{ option.name }}: <span class="quick-view-option__selected-value">{{ option.selected_value }}</span>
+                      </label>
+                      
+                      <div class="quick-view-option__values">
+                        {%- for value in option.values -%}
+                          <label class="quick-view-option__pill-label">
+                            <input type="radio"
+                                   name="option-{{ option.name | handleize }}"
+                                   value="{{ value | escape }}"
+                                   class="quick-view-option__input"
+                                   data-option-position="{{ option.position }}"
+                                   {% if option.selected_value == value %}checked="checked"{% endif %}>
+                            <span class="quick-view-option__pill">{{ value | escape }}</span>
+                          </label>
+                        {%- endfor -%}
+                      </div>
+                    </div>
+                  {%- endfor -%}
+                </div>
+              {%- endunless -%}
+
+              {%- comment -%} Quantity & Add to Cart Button {%- endcomment -%}
+              <div class="quick-view-product__actions">
+                <div class="quick-view-product__quantity-wrapper">
+                  <label for="QuickViewQuantity" class="visually-hidden">Quantity</label>
+                  <input type="number"
+                         id="QuickViewQuantity"
+                         name="quantity"
+                         value="1"
+                         min="1"
+                         class="quick-view-product__quantity-input">
+                </div>
+
+                <button type="submit"
+                        name="add"
+                        id="QuickViewAddToCartBtn"
+                        class="quick-view-product__add-btn"
+                        {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+                  <span id="QuickViewAddToCartText">
+                    {%- if current_variant.available -%}
+                      {{ 'products.product.add_to_cart' | t }}
+                    {%- else -%}
+                      {{ 'products.product.sold_out' | t }}
+                    {%- endif -%}
+                  </span>
+                </button>
+              </div>
+            {%- endform -%}
+
+            <div class="quick-view-product__full-details">
+              <a href="{{ product.url }}" class="quick-view-product__full-details-link">
+                {{ 'products.product.view_full_details' | t }} &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} JSON Variant Data for client-side JS switching {%- endcomment -%}
+        <script type="application/json" id="QuickViewVariantData">
+          {{ product.variants | json }}
+        </script>
+      {%- else -%}
+        <div class="quick-view-modal__loading-spinner">
+          <div class="spinner"></div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .quick-view-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.25s ease, opacity 0.25s ease;
+  }
+
+  .quick-view-modal[aria-hidden="false"] {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .quick-view-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+
+  .quick-view-modal__dialog {
+    position: relative;
+    width: 90%;
+    max-width: 860px;
+    max-height: 90vh;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    z-index: 10;
+    transform: scale(0.92);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .quick-view-modal[aria-hidden="false"] .quick-view-modal__dialog {
+    transform: scale(1);
+  }
+
+  .quick-view-modal__close-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #666666;
+    z-index: 20;
+    padding: 4px 8px;
+    border-radius: 50%;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .quick-view-modal__close-btn:hover {
+    color: #000000;
+    background-color: #f0f0f0;
+  }
+
+  .quick-view-modal__content {
+    padding: 32px;
+  }
+
+  /* Product Details Layout */
+  .quick-view-product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .quick-view-product__media {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .quick-view-product__main-image-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f7f7f7;
+  }
+
+  .quick-view-product__main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.2s ease;
+  }
+
+  .quick-view-product__thumbnails {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .quick-view-product__thumb-btn {
+    width: 54px;
+    height: 54px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease;
+  }
+
+  .quick-view-product__thumb-btn.is-active,
+  .quick-view-product__thumb-btn:hover {
+    border-color: #000000;
+  }
+
+  .quick-view-product__thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .quick-view-product__info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .quick-view-product__vendor {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888888;
+  }
+
+  .quick-view-product__title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .quick-view-product__price-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .quick-view-product__price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111111;
+  }
+
+  .quick-view-product__compare-price {
+    font-size: 1rem;
+    color: #999999;
+  }
+
+  .quick-view-product__compare-price.is-hidden {
+    display: none;
+  }
+
+  .quick-view-product__description {
+    font-size: 0.9rem;
+    color: #555555;
+    line-height: 1.5;
+  }
+
+  /* Variant Options Pills */
+  .quick-view-product__options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+  }
+
+  .quick-view-option__label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .quick-view-option__selected-value {
+    font-weight: 400;
+    color: #666666;
+  }
+
+  .quick-view-option__values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .quick-view-option__pill-label {
+    cursor: pointer;
+  }
+
+  .quick-view-option__input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .quick-view-option__pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid #cccccc;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .quick-view-option__input:checked + .quick-view-option__pill {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: #000000;
+  }
+
+  /* Actions & Add to Cart */
+  .quick-view-product__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .quick-view-product__quantity-input {
+    width: 60px;
+    height: 44px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .quick-view-product__add-btn {
+    flex: 1;
+    height: 44px;
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .quick-view-product__add-btn:hover:not([disabled]) {
+    background-color: #333333;
+  }
+
+  .quick-view-product__add-btn[disabled] {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .quick-view-product__full-details {
+    margin-top: 12px;
+  }
+
+  .quick-view-product__full-details-link {
+    font-size: 0.85rem;
+    color: #444444;
+    text-decoration: underline;
+  }
+
+  .quick-view-product__full-details-link:hover {
+    color: #000000;
+  }
+
+  /* Loading Spinner */
+  .quick-view-modal__loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #000000;
+    border-radius: 50%;
+    -webkit-animation: theme-spin 0.8s linear infinite;
+    animation: theme-spin 0.8s linear infinite;
+  }
+
+  .quick-view-product__add-btn.is-loading {
+    opacity: 0.8;
+    cursor: wait;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .quick-view-product {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .quick-view-modal__content {
+      padding: 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class QuickViewModalController {
+    constructor() {
+      this.modal = document.getElementById('QuickViewModal');
+      if (!this.modal) return;
+
+      this.initEvents();
+    }
+
+    initEvents() {
+      // Global listener for "Quick View" trigger buttons across all product cards
+      document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-action="quick-view"]');
+        if (trigger) {
+          e.preventDefault();
+          const handle = trigger.dataset.handle;
+          if (handle) {
+            this.fetchAndOpen(handle);
+          }
+          return;
+        }
+
+        const closeTarget = e.target.closest('[data-action="close-quick-view"]');
+        if (closeTarget) {
+          e.preventDefault();
+          this.close();
+        }
+      });
+
+      // Keyboard accessibility - Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen()) {
+          this.close();
+        }
+      });
+
+      // Delegate events inside the modal content panel
+      this.modal.addEventListener('click', (e) => {
+        const mediaBtn = e.target.closest('[data-action="switch-media"]');
+        if (mediaBtn) {
+          this.handleMediaSwitch(mediaBtn);
+        }
+      });
+
+      this.modal.addEventListener('change', (e) => {
+        if (e.target.classList.contains('quick-view-option__input')) {
+          this.handleVariantChange();
+        }
+      });
+
+      // Intercept Quick View Add to Cart form submission
+      this.modal.addEventListener('submit', (e) => {
+        const form = e.target;
+        if (form && form.id === 'QuickViewForm') {
+          e.preventDefault();
+          this.handleAddToCart(form);
+        }
+      });
+    }
+
+    isOpen() {
+      return this.modal.getAttribute('aria-hidden') === 'false';
+    }
+
+    open() {
+      this.modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    close() {
+      this.modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    async fetchAndOpen(handle) {
+      const content = this.modal.querySelector('.quick-view-modal__content');
+      content.innerHTML = '<div class="quick-view-modal__loading-spinner"><div class="spinner"></div></div>';
+      this.open();
+
+      try {
+        const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+        const cleanRoot = root.endsWith('/') ? root : root + '/';
+        const url = `${cleanRoot}products/${handle}?section_id=quick-view-modal`;
+
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const newContent = doc.querySelector('.quick-view-modal__content');
+
+          if (newContent) {
+            content.innerHTML = newContent.innerHTML;
+          }
+        } else {
+          content.innerHTML = '<p class="quick-view-error">Unable to load product preview.</p>';
+        }
+      } catch (error) {
+        console.error('Error fetching Quick View product:', error);
+        content.innerHTML = '<p class="quick-view-error">Unable to load product preview.</p>';
+      }
+    }
+
+    handleMediaSwitch(button) {
+      const newMediaUrl = button.dataset.mediaUrl;
+      const mainImage = this.modal.querySelector('#QuickViewMainImage');
+
+      if (mainImage && newMediaUrl) {
+        mainImage.src = newMediaUrl;
+        
+        // Update active thumbnail border
+        this.modal.querySelectorAll('.quick-view-product__thumb-btn').forEach(btn => btn.classList.remove('is-active'));
+        button.classList.add('is-active');
+      }
+    }
+
+    handleVariantChange() {
+      const variantDataEl = this.modal.querySelector('#QuickViewVariantData');
+      if (!variantDataEl) return;
+
+      const variants = JSON.parse(variantDataEl.textContent || '[]');
+      const checkedInputs = Array.from(this.modal.querySelectorAll('.quick-view-option__input:checked'));
+      const selectedOptions = checkedInputs.map(input => input.value);
+
+      // Match selected variant
+      const matchedVariant = variants.find(variant => {
+        return variant.options.every((optValue, index) => optValue === selectedOptions[index]);
+      });
+
+      const priceEl = this.modal.querySelector('#QuickViewPrice');
+      const comparePriceEl = this.modal.querySelector('#QuickViewComparePrice');
+      const variantIdInput = this.modal.querySelector('#QuickViewVariantId');
+      const addBtn = this.modal.querySelector('#QuickViewAddToCartBtn');
+      const addText = this.modal.querySelector('#QuickViewAddToCartText');
+      const mainImage = this.modal.querySelector('#QuickViewMainImage');
+
+      if (matchedVariant) {
+        if (variantIdInput) variantIdInput.value = matchedVariant.id;
+
+        // Update price
+        if (priceEl) priceEl.textContent = this.formatMoney(matchedVariant.price);
+
+        // Update compare price
+        if (comparePriceEl) {
+          if (matchedVariant.compare_at_price && matchedVariant.compare_at_price > matchedVariant.price) {
+            comparePriceEl.textContent = this.formatMoney(matchedVariant.compare_at_price);
+            comparePriceEl.classList.remove('is-hidden');
+          } else {
+            comparePriceEl.classList.add('is-hidden');
+          }
+        }
+
+        // Update main image if variant has featured image
+        if (matchedVariant.featured_image && matchedVariant.featured_image.src && mainImage) {
+          mainImage.src = matchedVariant.featured_image.src;
+        }
+
+        // Update button state (Available vs Sold out)
+        if (addBtn && addText) {
+          if (matchedVariant.available) {
+            addBtn.removeAttribute('disabled');
+            addText.textContent = 'Add to Cart';
+          } else {
+            addBtn.setAttribute('disabled', 'disabled');
+            addText.textContent = 'Sold Out';
+          }
+        }
+      } else {
+        if (addBtn && addText) {
+          addBtn.setAttribute('disabled', 'disabled');
+          addText.textContent = 'Unavailable';
+        }
+      }
+    }
+
+    formatMoney(cents) {
+      if (typeof Shopify !== 'undefined' && Shopify.formatMoney) {
+        return Shopify.formatMoney(cents);
+      }
+      return '$' + (cents / 100).toFixed(2);
+    }
+
+    async handleAddToCart(form) {
+      const addBtn = form.querySelector('#QuickViewAddToCartBtn');
+      if (window.ThemeCartUtils) {
+        await window.ThemeCartUtils.submitAddToCart(form, addBtn);
+      }
+    }
+  }
+
+  // Initialize on DOM Ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new QuickViewModalController());
+  } else {
+    new QuickViewModalController();
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Quick View Modal",
+  "settings": []
+}
+{% endschema %}
