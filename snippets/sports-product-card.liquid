@@ -1,0 +1,239 @@
+{% doc %}
+  Renders an Apple-style sports product card with hover quick view trigger and 1-click Add to Cart.
+
+  @param {object} product - Shopify product object
+
+  @example
+  {% render 'sports-product-card', product: product %}
+{% enddoc %}
+
+{%- assign first_variant = product.selected_or_first_available_variant -%}
+
+<div class="sports-card" data-product-id="{{ product.id }}">
+  <div class="sports-card__media-wrapper">
+    {%- if product.featured_media -%}
+      <img src="{{ product.featured_media | image_url: width: 600, height: 600, crop: 'center' }}"
+           alt="{{ product.featured_media.alt | default: product.title | escape }}"
+           width="300"
+           height="300"
+           class="sports-card__image"
+           loading="lazy">
+    {%- else -%}
+      <div class="sports-card__placeholder"></div>
+    {%- endif -%}
+
+    {%- if first_variant.compare_at_price > first_variant.price -%}
+      <span class="sports-card__sale-badge">SALE</span>
+    {%- endif -%}
+
+    <div class="sports-card__actions-overlay">
+      <button type="button"
+              class="sports-card__quick-view-btn"
+              data-action="quick-view"
+              data-handle="{{ product.handle }}"
+              aria-label="{{ 'products.product.quick_view' | t }}">
+        👁️ {{ 'products.product.quick_view' | t }}
+      </button>
+    </div>
+  </div>
+
+  <div class="sports-card__info">
+    {%- if product.vendor != blank -%}
+      <span class="sports-card__vendor">{{ product.vendor | escape }}</span>
+    {%- endif -%}
+
+    <h3 class="sports-card__title">
+      <a href="{{ product.url }}">{{ product.title | escape }}</a>
+    </h3>
+
+    <div class="sports-card__price-row">
+      <span class="sports-card__price">{{ first_variant.price | money }}</span>
+      {%- if first_variant.compare_at_price > first_variant.price -%}
+        <s class="sports-card__compare-price">{{ first_variant.compare_at_price | money }}</s>
+      {%- endif -%}
+    </div>
+
+    {%- form 'product', product, class: 'sports-card__add-form' -%}
+      <input type="hidden" name="id" value="{{ first_variant.id }}">
+      <button type="submit"
+              name="add"
+              class="sports-card__add-btn"
+              {% unless first_variant.available %}disabled="disabled"{% endunless %}>
+        {%- if first_variant.available -%}
+          + {{ 'products.product.add_to_cart' | t }}
+        {%- else -%}
+          {{ 'products.product.sold_out' | t }}
+        {%- endif -%}
+      </button>
+    {%- endform -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .sports-card {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #eeeeee;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  }
+
+  .sports-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+    border-color: #dddddd;
+  }
+
+  .sports-card__media-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #f7f7f7;
+    margin-bottom: 14px;
+  }
+
+  .sports-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .sports-card:hover .sports-card__image {
+    transform: scale(1.04);
+  }
+
+  .sports-card__sale-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 10px;
+    background-color: #ff3b30;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    z-index: 2;
+  }
+
+  .sports-card__actions-overlay {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 3;
+  }
+
+  .sports-card:hover .sports-card__actions-overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .sports-card__quick-view-btn {
+    width: 100%;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #000000;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+  }
+
+  .sports-card__quick-view-btn:hover {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  .sports-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sports-card__vendor {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888888;
+  }
+
+  .sports-card__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  .sports-card__title a {
+    color: #111111;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .sports-card__title a:hover {
+    color: #000000;
+    text-decoration: underline;
+  }
+
+  .sports-card__price-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .sports-card__price {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #111111;
+  }
+
+  .sports-card__compare-price {
+    font-size: 0.85rem;
+    color: #999999;
+  }
+
+  .sports-card__add-form {
+    margin-top: 10px;
+  }
+
+  .sports-card__add-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .sports-card__add-btn:hover:not([disabled]) {
+    background-color: #222222;
+    transform: translateY(-1px);
+  }
+
+  .sports-card__add-btn[disabled] {
+    background-color: #dddddd;
+    color: #888888;
+    cursor: not-allowed;
+  }
+{% endstylesheet %}

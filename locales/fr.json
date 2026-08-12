@@ -1,4 +1,12 @@
 {
+  "header": {
+    "settings_title": "Préférences & Paramètres",
+    "language_label": "Langue",
+    "currency_label": "Devise",
+    "home_menu": "Accueil",
+    "products_menu": "Tous les produits",
+    "categories_menu": "Catégories"
+  },
   "404": {
     "title": "404",
     "not_found": "Page introuvable.",
@@ -17,7 +25,31 @@
     "checkout": "Commander",
     "title": "Panier",
     "update": "Mettre à jour",
-    "remove": "Retirer"
+    "remove": "Retirer",
+    "drawer": {
+      "title": "Votre panier",
+      "empty": "Votre panier est vide",
+      "continue_shopping": "Continuer les achats",
+      "subtotal": "Sous-total",
+      "taxes_and_shipping_policy_at_checkout_html": "Taxes et frais de port calculés lors du paiement",
+      "free_shipping_progress_html": "Ajoutez {{ amount }} de plus pour bénéficier de la <strong>livraison GRATUITE !</strong>",
+      "free_shipping_unlocked": "Félicitations ! Vous avez débloqué la livraison GRATUITE !",
+      "upsell_title": "Vous aimerez aussi",
+      "add_to_cart": "Ajouter",
+      "adding": "Ajout...",
+      "added": "Ajouté",
+      "close": "Fermer le panier"
+    }
+  },
+  "products": {
+    "product": {
+      "quick_view": "Aperçu rapide",
+      "add_to_cart": "Ajouter au panier",
+      "sold_out": "Épuisé",
+      "unavailable": "Indisponible",
+      "view_full_details": "Voir tous les détails",
+      "close_quick_view": "Fermer l'aperçu rapide"
+    }
   },
   "customers": {
     "login": {
@@ -72,25 +104,38 @@
   "home": {
     "hero": {
       "title": "Bonjour le monde !",
-      "description": "Le thème Skeleton est un thème Shopify minimal et soigneusement structuré conçu pour vous aider à démarrer rapidement. Conçu avec modularité, maintenabilité et les meilleures pratiques de Shopify.",
-      "description2": "Les thèmes façonnent l'expérience de boutique en ligne pour les marchands et leurs clients. Créez des thèmes rapides et flexibles à grande échelle en utilisant Liquid, le langage de template de Shopify, ainsi que HTML, CSS, JavaScript et JSON."
+      "description": "Le thème Skeleton est un thème Shopify minimal et soigneusement structuré.",
+      "description2": "Les thèmes façonnent l'expérience de boutique en ligne."
     },
-    "sections": {
-      "key_concepts": {
-        "title": "Concepts clés",
-        "description": "Les thèmes Shopify sont un ensemble de fichiers de template, de blocs de construction et de ressources. Utilisez ces blocs pour créer des thèmes modulaires et personnalisables.",
-        "link_text": "En savoir plus sur les concepts clés"
-      },
-      "liquid": {
-        "title": "Liquid",
-        "description": "Le langage de template Liquid est la colonne vertébrale des thèmes Shopify. Il est utilisé pour charger du contenu dynamique sur les boutiques. Étendez les objets Liquid pour stocker et présenter des données personnalisées via les metafields.",
-        "link_text": "Voir la référence Liquid"
-      },
-      "best_practices": {
-        "title": "Bonnes pratiques",
-        "description": "Pour optimiser votre expérience de développement de thème, Shopify a établi un ensemble de bonnes pratiques que vous pouvez consulter lors du développement de votre thème et de la configuration de vos outils.",
-        "link_text": "Suivre les bonnes pratiques"
-      }
+    "sports_hero": {
+      "badge": "COLLECTION ATHLÉTIQUE PRO 2026",
+      "title": "AU-DELÀ DES LIMITES · LIBÉREZ VOTRE POTENTIEL",
+      "subtitle": "Découvrez les équipements sportifs professionnels de nouvelle génération.",
+      "button_label": "EXPLORER L'ÉQUIPEMENT",
+      "secondary_label": "VOIR LES CATÉGORIES"
+    },
+    "sports_categories": {
+      "title": "Explorer par sport",
+      "subtitle": "Conçu pour l'excellence.",
+      "badminton": "Badminton",
+      "running": "Course à pied",
+      "basketball": "Basketball",
+      "training": "Entraînement"
+    },
+    "sports_featured": {
+      "title": "Vitesse & Performance · Équipement en vedette",
+      "subtitle": "Équipement de qualité professionnelle.",
+      "view_all": "Voir tous les produits"
+    },
+    "sports_trust": {
+      "guarantee_title": "Garantie 100% Authentique",
+      "guarantee_desc": "Directement depuis les canaux autorisés",
+      "shipping_title": "Expédition Express Mondiale",
+      "shipping_desc": "Envoi rapide et suivi",
+      "returns_title": "Retours Sans Tracas 30 Jours",
+      "returns_desc": "Échanges faciles",
+      "support_title": "Support Athlète Pro",
+      "support_desc": "Conseils d'experts"
     }
   }
 }

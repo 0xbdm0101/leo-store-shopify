@@ -1,0 +1,154 @@
+{%- comment -%}
+  Apple-Style Sports Featured Collection Section
+  Renders pro gear product cards with integrated 👁️ Quick View & 1-Click Add to Cart (Cart Drawer).
+{%- endcomment -%}
+
+<div class="sports-featured page-width">
+  <div class="sports-featured__header">
+    {%- assign feat_title = section.settings.title -%}
+    {%- if feat_title == blank -%}
+      {%- assign feat_title = 'home.sports_featured.title' | t -%}
+    {%- endif -%}
+
+    {%- assign feat_subtitle = section.settings.subtitle -%}
+    {%- if feat_subtitle == blank -%}
+      {%- assign feat_subtitle = 'home.sports_featured.subtitle' | t -%}
+    {%- endif -%}
+
+    <div class="sports-featured__header-text">
+      <h2 class="sports-featured__title">
+        {{ feat_title | escape_once }}
+      </h2>
+      {%- if feat_subtitle != blank -%}
+        <p class="sports-featured__subtitle">
+          {{ feat_subtitle | escape_once }}
+        </p>
+      {%- endif -%}
+    </div>
+
+    {%- assign target_collection = collections[section.settings.collection] -%}
+    <a href="{{ target_collection.url | default: routes.all_products_collection_url }}" class="sports-featured__view-all-link">
+      {{ 'home.sports_featured.view_all' | t }} &rarr;
+    </a>
+  </div>
+
+  <div class="sports-featured__grid">
+    {%- if target_collection != blank and target_collection.products.size > 0 -%}
+      {%- for product in target_collection.products limit: section.settings.products_to_show -%}
+        {%- render 'sports-product-card', product: product -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign all_prods = collections.all.products -%}
+      {%- if all_prods.size > 0 -%}
+        {%- for product in all_prods limit: section.settings.products_to_show -%}
+          {%- render 'sports-product-card', product: product -%}
+        {%- endfor -%}
+      {%- else -%}
+        <p class="sports-featured__no-products">No products found in collection.</p>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .sports-featured {
+    padding-top: 40px;
+    padding-bottom: 60px;
+  }
+
+  .sports-featured__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+  }
+
+  .sports-featured__title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+    color: #111111;
+  }
+
+  .sports-featured__subtitle {
+    font-size: 0.95rem;
+    color: #666666;
+    margin: 0;
+  }
+
+  .sports-featured__view-all-link {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #000000;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .sports-featured__view-all-link:hover {
+    opacity: 0.7;
+  }
+
+  .sports-featured__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 990px) {
+    .sports-featured__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sports-featured__grid {
+      grid-template-columns: 1fr;
+    }
+    .sports-featured__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured Sports Gear",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Speed & Performance · Featured Gear"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Pro-grade equipment trusted by athletes worldwide."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to Show",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Sports Gear"
+    }
+  ]
+}
+{% endschema %}

@@ -1,76 +1,412 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+{%- comment -%}
+  Apple-Style Sports Header Section
+  Left: APEX SPORTS logo + margin-left Navigation links
+  Right: Account icon + Cart Drawer icon + Settings Gear icon (⚙️)
+  Slide Drawer: Clean 🌐 Language & 💱 Currency Preference Cards with full i18n dynamic translation support.
+{%- endcomment -%}
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
+<header class="header full-width">
+  <div class="header__left">
+    <a href="{{ routes.root_url }}" class="header__logo-link">
+      {%- if section.settings.logo != blank -%}
+        <img src="{{ section.settings.logo | image_url: width: 300 }}"
+             alt="{{ shop.name | escape }}"
+             width="150"
+             height="40"
+             class="header__logo-image">
+      {%- else -%}
+        <span class="header__logo-icon">⚡</span>
+        <span class="header__logo-text">{{ section.settings.custom_logo_text | default: 'APEX SPORTS' }}</span>
+      {%- endif -%}
+    </a>
+
+    <nav class="header__menu" aria-label="Main Navigation">
+      {%- if section.settings.menu != blank and section.settings.menu.links.size > 0 -%}
+        {%- for link in section.settings.menu.links -%}
+          <a href="{{ link.url }}" class="header__menu-item{% if link.active %} header__menu-item--active{% endif %}">
+            {{ link.title | escape }}
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        <a href="{{ routes.root_url }}" class="header__menu-item header__menu-item--active">{{ 'header.home_menu' | t }}</a>
+        <a href="{{ routes.all_products_collection_url }}" class="header__menu-item">{{ 'header.products_menu' | t }}</a>
+        <a href="#sports-categories" class="header__menu-item">{{ 'header.categories_menu' | t }}</a>
+      {%- endif -%}
+    </nav>
   </div>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
-    {% endif %}
+  <div class="header__right">
+    {%- if shop.customer_accounts_enabled -%}
+      <a href="{{ routes.account_url }}" class="header__icon-btn" aria-label="Account">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </a>
+    {%- endif -%}
 
-    <a href="{{ routes.cart_url }}" data-action="open-cart-drawer">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
-
-      {{ 'icon-cart.svg' | inline_asset_content }}
+    <a href="{{ routes.cart_url }}" class="header__icon-btn header__cart-btn" data-action="open-cart-drawer" aria-label="Cart">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      {%- if cart.item_count > 0 -%}
+        <span class="header__cart-badge">{{ cart.item_count }}</span>
+      {%- endif -%}
     </a>
+
+    <!-- Settings Gear Button (⚙️) -->
+    <button type="button" class="header__icon-btn header__gear-btn" data-action="toggle-header-menu" aria-label="Settings">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Settings Slide Drawer -->
+  <div class="header__drawer" id="HeaderMenuDrawer">
+    <div class="header__drawer-overlay" data-action="close-header-menu"></div>
+    <div class="header__drawer-content">
+      <div class="header__drawer-header">
+        <span class="header__drawer-title">{{ 'header.settings_title' | t }}</span>
+        <button type="button" class="header__drawer-close" data-action="close-header-menu" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="header__drawer-body">
+        <!-- Item 1: Language Preference Card -->
+        <div class="header__drawer-card">
+          <span class="header__drawer-card-title">🌐 {{ 'header.language_label' | t }}</span>
+          <div class="header__drawer-card-body">
+            {% render 'locale-selector', type: 'language', position: 'header', style: 'dropdown' %}
+          </div>
+        </div>
+
+        <!-- Item 2: Currency Preference Card -->
+        <div class="header__drawer-card">
+          <span class="header__drawer-card-title">💱 {{ 'header.currency_label' | t }}</span>
+          <div class="header__drawer-card-body">
+            {% render 'locale-selector', type: 'currency', position: 'header', style: 'dropdown' %}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 4.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding-left: max(var(--page-margin, 24px), 24px);
+    padding-right: max(var(--page-margin, 24px), 24px);
+    box-sizing: border-box;
   }
-  header a {
-    position: relative;
+
+  /* Left Section (Logo + Navigation with margin-left) */
+  .header__left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .header__logo-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     text-decoration: none;
-    color: var(--color-foreground);
+    color: #000000;
+    flex-shrink: 0;
+  }
+
+  .header__logo-icon {
+    font-size: 1.5rem;
+  }
+
+  .header__logo-text {
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #000000;
+    white-space: nowrap;
+  }
+
+  .header__logo-image {
+    max-height: 38px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Navigation right next to Logo with margin-left */
+  .header__menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 2.5rem;
+  }
+
+  .header__menu-item {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .header__menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000000;
+  }
+
+  .header__menu-item--active {
+    background-color: #000000;
+    color: #ffffff;
+  }
+
+  .header__menu-item--active:hover {
+    background-color: #222222;
+    color: #ffffff;
+  }
+
+  /* Right Utilities (Account + Cart + Settings Gear) */
+  .header__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .header__icon-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: #111111;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .header__icon-btn:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .header__gear-btn:hover svg {
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+  }
+
+  .header__cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 999px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  header a sup {
+
+  /* Slide Drawer Stack & Layer Fixes */
+  .header__drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    max-width: 100%;
+    box-sizing: border-box;
+    z-index: 9999999;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s ease, opacity 0.3s ease;
+  }
+
+  .header__drawer.is-active {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .header__drawer-overlay {
     position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1;
   }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
+
+  .header__drawer-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 350px;
+    max-width: 85vw;
+    height: 100vh;
+    background: #ffffff;
+    color: #111111;
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.2);
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .header__drawer.is-active .header__drawer-content {
+    transform: translateX(0);
+  }
+
+  .header__drawer-header {
+    position: relative;
+    z-index: 20;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eeeeee;
+    flex-shrink: 0;
+  }
+
+  .header__drawer-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #111111;
+  }
+
+  .header__drawer-close {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #666666;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .header__drawer-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  /* Spacious Apple Cards for Drawer Items */
+  .header__drawer-card {
+    background-color: #f7f7f9;
+    border: 1px solid #eaeaef;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .header__drawer-card-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #444444;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header__drawer-card-body {
+    width: 100%;
+  }
+
+  .header__drawer-card .custom-locale-selector {
+    width: 100%;
+  }
+
+  body.header-drawer-open {
+    overflow: hidden;
+  }
+
+  @media (max-width: 900px) {
+    .header__menu {
+      display: none;
+    }
   }
 {% endstylesheet %}
 
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    var drawer = document.getElementById('HeaderMenuDrawer');
+    if (!drawer) return;
+
+    document.querySelectorAll('[data-action="toggle-header-menu"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        drawer.classList.toggle('is-active');
+        document.body.classList.toggle('header-drawer-open');
+      });
+    });
+
+    document.querySelectorAll('[data-action="close-header-menu"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        drawer.classList.remove('is-active');
+        document.body.classList.remove('header-drawer-open');
+      });
+    });
+  });
+{% endjavascript %}
+
 {% schema %}
 {
-  "name": "t:general.header",
+  "name": "Sports Header with Gear",
   "settings": [
     {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "type": "text",
+      "id": "custom_logo_text",
+      "label": "Brand Store Name",
+      "default": "APEX SPORTS"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
     },
     {
       "type": "link_list",
-      "id": "customer_account_menu",
-      "label": "t:labels.customer_account_menu",
-      "default": "customer-account-main-menu"
+      "id": "menu",
+      "label": "Header Menu"
     }
   ]
 }

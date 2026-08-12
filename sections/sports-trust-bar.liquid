@@ -1,0 +1,198 @@
+{%- comment -%}
+  Apple-Style Sports Trust Bar Section
+  Displays brand guarantees: 100% Authentic, Fast Shipping, 30-Day Returns, Pro Support.
+{%- endcomment -%}
+
+<div class="sports-trust page-width">
+  <div class="sports-trust__grid">
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        {%- assign raw_title = block.settings.title -%}
+        {%- assign raw_desc = block.settings.description -%}
+        {%- assign trust_title = raw_title -%}
+        {%- assign trust_desc = raw_desc -%}
+
+        {%- if raw_title == 'guarantee' or raw_title contains '100%' or raw_title contains '正品' or raw_title contains 'Authentic' or raw_title == blank -%}
+          {%- assign trust_title = 'home.sports_trust.guarantee_title' | t -%}
+          {%- assign trust_desc = 'home.sports_trust.guarantee_desc' | t -%}
+        {%- elsif raw_title == 'shipping' or raw_title contains '发货' or raw_title contains 'Shipping' -%}
+          {%- assign trust_title = 'home.sports_trust.shipping_title' | t -%}
+          {%- assign trust_desc = 'home.sports_trust.shipping_desc' | t -%}
+        {%- elsif raw_title == 'returns' or raw_title contains '退换' or raw_title contains 'Returns' -%}
+          {%- assign trust_title = 'home.sports_trust.returns_title' | t -%}
+          {%- assign trust_desc = 'home.sports_trust.returns_desc' | t -%}
+        {%- elsif raw_title == 'support' or raw_title contains '顾问' or raw_title contains 'Support' -%}
+          {%- assign trust_title = 'home.sports_trust.support_title' | t -%}
+          {%- assign trust_desc = 'home.sports_trust.support_desc' | t -%}
+        {%- endif -%}
+
+        <div class="sports-trust__item" {{ block.shopify_attributes }}>
+          <div class="sports-trust__icon-wrapper">
+            <span class="sports-trust__icon">{{ block.settings.icon | default: '⚡' }}</span>
+          </div>
+          <div class="sports-trust__text-wrapper">
+            <h4 class="sports-trust__title">{{ trust_title | escape_once }}</h4>
+            <p class="sports-trust__desc">{{ trust_desc | escape_once }}</p>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="sports-trust__item">
+        <div class="sports-trust__icon-wrapper"><span class="sports-trust__icon">🛡️</span></div>
+        <div class="sports-trust__text-wrapper">
+          <h4 class="sports-trust__title">{{ 'home.sports_trust.guarantee_title' | t }}</h4>
+          <p class="sports-trust__desc">{{ 'home.sports_trust.guarantee_desc' | t }}</p>
+        </div>
+      </div>
+      <div class="sports-trust__item">
+        <div class="sports-trust__icon-wrapper"><span class="sports-trust__icon">🚚</span></div>
+        <div class="sports-trust__text-wrapper">
+          <h4 class="sports-trust__title">{{ 'home.sports_trust.shipping_title' | t }}</h4>
+          <p class="sports-trust__desc">{{ 'home.sports_trust.shipping_desc' | t }}</p>
+        </div>
+      </div>
+      <div class="sports-trust__item">
+        <div class="sports-trust__icon-wrapper"><span class="sports-trust__icon">🔄</span></div>
+        <div class="sports-trust__text-wrapper">
+          <h4 class="sports-trust__title">{{ 'home.sports_trust.returns_title' | t }}</h4>
+          <p class="sports-trust__desc">{{ 'home.sports_trust.returns_desc' | t }}</p>
+        </div>
+      </div>
+      <div class="sports-trust__item">
+        <div class="sports-trust__icon-wrapper"><span class="sports-trust__icon">🏸</span></div>
+        <div class="sports-trust__text-wrapper">
+          <h4 class="sports-trust__title">{{ 'home.sports_trust.support_title' | t }}</h4>
+          <p class="sports-trust__desc">{{ 'home.sports_trust.support_desc' | t }}</p>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .sports-trust {
+    padding-top: 20px;
+    padding-bottom: 60px;
+  }
+
+  .sports-trust__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 24px;
+    background: #f7f7f9;
+    border-radius: 20px;
+    border: 1px solid #eeeeee;
+  }
+
+  .sports-trust__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .sports-trust__icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+  }
+
+  .sports-trust__icon {
+    font-size: 1.4rem;
+  }
+
+  .sports-trust__text-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sports-trust__title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    color: #111111;
+  }
+
+  .sports-trust__desc {
+    font-size: 0.78rem;
+    color: #777777;
+    margin: 0;
+  }
+
+  @media (max-width: 990px) {
+    .sports-trust__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .sports-trust__grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Sports Trust Bar",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "trust_item",
+      "name": "Trust Feature",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Emoji Icon",
+          "default": "🛡️"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "100% Authentic Guarantee"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Direct from authorized brand channels"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sports Trust Bar",
+      "blocks": [
+        {
+          "type": "trust_item",
+          "settings": { "icon": "🛡️", "title": "100% 官方正品保证", "description": "品牌正规授权渠道 假一赔十" }
+        },
+        {
+          "type": "trust_item",
+          "settings": { "icon": "🚚", "title": "极速发货 全程追踪", "description": "高效仓储物流 全程实时追踪" }
+        },
+        {
+          "type": "trust_item",
+          "settings": { "icon": "🔄", "title": "30 天无忧退换承诺", "description": "支持七天无理由退换 轻松换货" }
+        },
+        {
+          "type": "trust_item",
+          "settings": { "icon": "🏸", "title": "专业运动顾问支持", "description": "一对一选拍与球拍拉线建议" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

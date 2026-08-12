@@ -1,8 +1,8 @@
 {% doc %}
-  Renders a language or currency selector.
+  Renders a custom Apple-style language or currency selector.
 
   Uses Shopify's {% form 'localization' %} for reliable locale switching.
-  Supports both liquid and JS modes.
+  Features a custom non-native UI dropdown menu with generous arrow spacing, active checkmarks, and glassmorphic floating popovers.
 
   @param {string} type - "language" or "currency"
   @param {string} [position] - "header" or "footer"
@@ -16,125 +16,189 @@
   if type == 'language'
     assign label = 'general.locale.language_label' | t
     assign current = localization.language.iso_code
+    assign current_name = localization.language.endonym_name
     assign param_name = 'language_code'
     assign options_source = localization.available_languages
   else
     assign label = 'general.locale.currency_label' | t
     assign current = localization.country.iso_code
+    assign current_name = localization.country.currency.iso_code | append: ' (' | append: localization.country.currency.symbol | append: ')'
     assign param_name = 'country_code'
     assign options_source = localization.available_countries
   endif
 %}
 
-<div class="locale-selector locale-selector--{{ type }} locale-selector--{{ style | default: 'dropdown' }} locale-selector--{{ position | default: 'footer' }}"
-     data-locale-type="{{ type }}"
-     data-default-locale="{{ localization.default_language.iso_code }}">
-  {%- form 'localization' -%}
+<div class="custom-locale-selector custom-locale-selector--{{ type }}" data-locale-type="{{ type }}">
+  {%- form 'localization', class: 'custom-locale-form' -%}
     <input type="hidden" name="return_to" value="{{ request.path }}" data-return-to>
+    <input type="hidden" name="{{ param_name }}" value="{{ current }}" data-custom-locale-input="{{ type }}">
 
-    <label for="locale-select-{{ type }}-{{ position | default: 'footer' }}" class="visually-hidden">
-      {{ label }}
-    </label>
-
-    <select
-      id="locale-select-{{ type }}-{{ position | default: 'footer' }}"
-      name="{{ param_name }}"
-      class="locale-selector__select"
-      data-locale-select="{{ type }}"
-      aria-label="{{ label }}"
-    >
-      {%- if type == 'language' -%}
-        {%- for language in options_source -%}
-          <option value="{{ language.iso_code }}"{% if language.iso_code == current %} selected{% endif %}>
-            {{ language.endonym_name }}
-          </option>
-        {%- endfor -%}
-      {%- else -%}
-        {%- for country in options_source -%}
-          {%- assign currency = country.currency -%}
-          <option value="{{ country.iso_code }}"{% if country.iso_code == current %} selected{% endif %}>
-            {{ currency.iso_code }} ({{ currency.symbol }})
-          </option>
-        {%- endfor -%}
-      {%- endif -%}
-    </select>
-
-    <noscript>
-      <button type="submit" class="locale-selector__submit">
-        {%- if type == 'language' -%}
-          {{ 'general.locale.switch_language' | t: name: '' }}
-        {%- else -%}
-          {{ 'general.locale.switch_currency' | t: name: '', code: '' }}
-        {%- endif -%}
+    <div class="custom-dropdown" data-custom-dropdown="{{ type }}">
+      <button type="button" class="custom-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="{{ label }}">
+        <span class="custom-dropdown__current-label">{{ current_name }}</span>
+        <svg class="custom-dropdown__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </button>
-    </noscript>
+
+      <ul class="custom-dropdown__list" role="listbox">
+        {%- if type == 'language' -%}
+          {%- for language in options_source -%}
+            {%- assign is_selected = false -%}
+            {%- if language.iso_code == current -%}{%- assign is_selected = true -%}{%- endif -%}
+            <li class="custom-dropdown__item{% if is_selected %} is-active{% endif %}"
+                data-value="{{ language.iso_code }}"
+                role="option"
+                aria-selected="{{ is_selected }}">
+              <span class="custom-dropdown__item-text">{{ language.endonym_name }}</span>
+              {%- if is_selected -%}
+                <span class="custom-dropdown__checkmark">✓</span>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for country in options_source -%}
+            {%- assign currency = country.currency -%}
+            {%- assign is_selected = false -%}
+            {%- if country.iso_code == current -%}{%- assign is_selected = true -%}{%- endif -%}
+            <li class="custom-dropdown__item{% if is_selected %} is-active{% endif %}"
+                data-value="{{ country.iso_code }}"
+                role="option"
+                aria-selected="{{ is_selected }}">
+              <span class="custom-dropdown__item-text">{{ currency.iso_code }} ({{ currency.symbol }}) - {{ country.name }}</span>
+              {%- if is_selected -%}
+                <span class="custom-dropdown__checkmark">✓</span>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+    </div>
   {%- endform -%}
 </div>
 
 {% stylesheet %}
-  .locale-selector {
+  .custom-locale-selector {
     position: relative;
-    display: inline-flex;
-    align-items: center;
+    width: 100%;
+    display: block;
   }
-  .locale-selector__form {
+
+  .custom-locale-form {
+    width: 100%;
+    margin: 0;
+  }
+
+  .custom-dropdown {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Custom Apple-Style Trigger Button */
+  .custom-dropdown__trigger {
+    width: 100%;
+    height: 46px;
+    padding: 0 42px 0 16px;
+    border-radius: 12px;
+    border: 1px solid #dcdce2;
+    background-color: #ffffff;
+    color: #111111;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-align: left;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-  }
-  .locale-selector__select {
-    appearance: none;
-    -webkit-appearance: none;
-    font-family: var(--font-primary--family);
-    font-size: var(--locale-select-font-size);
-    padding: var(--locale-select-padding);
-    border: 1px solid var(--locale-select-border-color);
-    border-radius: var(--style-border-radius-inputs);
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    justify-content: space-between;
     cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 0.75rem;
-    max-width: 100%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
   }
-  .locale-selector__select:focus-visible {
-    outline: var(--locale-select-focus-ring);
-    outline-offset: 2px;
+
+  .custom-dropdown__trigger:hover {
+    border-color: #000000;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   }
-  .locale-selector__submit {
-    font-family: var(--font-primary--family);
-    font-size: var(--locale-select-font-size);
-    padding: 0.25rem 0.75rem;
-    border: 1px solid var(--locale-select-border-color);
-    border-radius: var(--style-border-radius-inputs);
-    background-color: var(--color-foreground);
-    color: var(--color-background);
-    cursor: pointer;
-  }
-  .locale-selector__submit:focus-visible {
-    outline: var(--locale-select-focus-ring);
-    outline-offset: 2px;
-  }
-  .locale-selector--header { margin: 0 0.5rem; }
-  .locale-selector--footer { margin: 0 0.5rem; }
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
+
+  .custom-dropdown__current-label {
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    text-overflow: ellipsis;
     white-space: nowrap;
-    border-width: 0;
   }
-  @media screen and (max-width: 749px) {
-    .locale-selector__select {
-      font-size: calc(var(--locale-select-font-size) - 0.0625rem);
-      padding: 0.375rem 1.75rem 0.375rem 0.5rem;
-    }
+
+  .custom-dropdown__chevron {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.25s ease;
+    pointer-events: none;
+    color: #666666;
+  }
+
+  .custom-dropdown.is-open .custom-dropdown__chevron {
+    transform: translateY(-50%) rotate(180deg);
+    color: #000000;
+  }
+
+  /* Custom Floating Popover List */
+  .custom-dropdown__list {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    right: 0;
+    max-width: 100%;
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14);
+    padding: 6px;
+    margin: 0;
+    list-style: none;
+    z-index: 100000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  .custom-dropdown.is-open .custom-dropdown__list {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .custom-dropdown__item {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .custom-dropdown__item:hover {
+    background-color: #f2f2f7;
+    color: #000000;
+  }
+
+  .custom-dropdown__item.is-active {
+    background-color: #000000;
+    color: #ffffff;
+  }
+
+  .custom-dropdown__checkmark {
+    font-weight: 800;
+    font-size: 0.95rem;
   }
 {% endstylesheet %}
 
@@ -153,22 +217,58 @@
       } catch (e) {}
     }
 
-    document.querySelectorAll('[data-locale-select]').forEach(function(select) {
-      var form = select.closest('form');
-      if (!form) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle dropdown open/close
+      document.querySelectorAll('[data-custom-dropdown]').forEach(function(dropdown) {
+        var trigger = dropdown.querySelector('.custom-dropdown__trigger');
+        var hiddenInput = dropdown.closest('form').querySelector('[data-custom-locale-input]');
+        var form = dropdown.closest('form');
 
-      // Fix return_to with query string
-      var returnTo = form.querySelector('[data-return-to]');
-      if (returnTo) {
-        returnTo.value = window.location.pathname + window.location.search;
-      }
+        if (!trigger || !form) return;
 
-      // Auto-submit on change
-      select.addEventListener('change', function() {
-        var type = select.getAttribute('data-locale-select') || select.getAttribute('data-locale-type');
-        if (type === 'language') savePrefs(select.value, null);
-        if (type === 'currency') savePrefs(null, select.value);
-        form.submit();
+        // Fix return_to
+        var returnTo = form.querySelector('[data-return-to]');
+        if (returnTo) {
+          returnTo.value = window.location.pathname + window.location.search;
+        }
+
+        trigger.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Close all other dropdowns
+          document.querySelectorAll('.custom-dropdown.is-open').forEach(function(other) {
+            if (other !== dropdown) other.classList.remove('is-open');
+          });
+
+          dropdown.classList.toggle('is-open');
+        });
+
+        // Option click
+        dropdown.querySelectorAll('.custom-dropdown__item').forEach(function(item) {
+          item.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var val = item.getAttribute('data-value');
+            var type = hiddenInput ? hiddenInput.getAttribute('data-custom-locale-input') : null;
+
+            if (hiddenInput) hiddenInput.value = val;
+
+            if (type === 'language') savePrefs(val, null);
+            if (type === 'currency') savePrefs(null, val);
+
+            dropdown.classList.remove('is-open');
+            form.submit();
+          });
+        });
+      });
+
+      // Close dropdowns on outside click
+      document.addEventListener('click', function() {
+        document.querySelectorAll('.custom-dropdown.is-open').forEach(function(dropdown) {
+          dropdown.classList.remove('is-open');
+        });
       });
     });
   })();

@@ -15,8 +15,8 @@
 
 **目标**：配置全站运动商城首页多语言字典
 
-- [ ] T001 在 `locales/en.default.json` 中添加 `home.sports_hero.*`, `home.sports_categories.*`, `home.sports_featured.*`, `home.sports_trust.*` 字典
-- [ ] T002 在 `locales/zh-CN.json` 中添加对应的中文翻译字典
+- [x] T001 在 `locales/en.default.json` 中添加 `home.sports_hero.*`, `home.sports_categories.*`, `home.sports_featured.*`, `home.sports_trust.*` 字典
+- [x] T002 在 `locales/zh-CN.json` 中添加对应的中文翻译字典
 
 ---
 
@@ -24,7 +24,7 @@
 
 **目标**：清理旧 Skeleton Demo 首页结构，为新 Section 准备模板架构
 
-- [ ] T003 [P] 整理 `templates/index.json` 清理遗留 Skeleton 测试模板结构
+- [x] T003 [P] 整理 `templates/index.json` 清理遗留 Skeleton 测试模板结构
 
 ---
 
@@ -36,9 +36,9 @@
 
 ### 用户故事 1 实现任务
 
-- [ ] T004 [US1] 创建 `sections/sports-hero.liquid`，构建包含毛玻璃标签、标语、CTA 按钮及 Shopify 后台 `{% schema %}` 可视化配置项
-- [ ] T005 [US1] 在 `sections/sports-hero.liquid` 的 `{% stylesheet %}` 中编写极简苹果风毛玻璃面板、胶囊大圆角与 CSS3 悬浮升起动画
-- [ ] T006 [US1] 根据 `specs/004-apple-sports-homepage/quickstart.md` 的场景 1 验证 Hero 区域功能与视觉效果
+- [x] T004 [US1] 创建 `sections/sports-hero.liquid`，构建包含毛玻璃标签、标语、CTA 按钮及 Shopify 后台 `{% schema %}` 可视化配置项
+- [x] T005 [US1] 在 `sections/sports-hero.liquid` 的 `{% stylesheet %}` 中编写极简苹果风毛玻璃面板、胶囊大圆角与 CSS3 悬浮升起动画
+- [x] T006 [US1] 根据 `specs/004-apple-sports-homepage/quickstart.md` 的场景 1 验证 Hero 区域功能与视觉效果
 
 **检查点**：用户故事 1 MVP 核心完成并可独立测试。
 
@@ -52,8 +52,8 @@
 
 ### 用户故事 2 实现任务
 
-- [ ] T007 [P] [US2] 创建 `sections/sports-categories.liquid`，构建分类金刚位 HTML、CSS3 微交互样式及 Block 级 `{% schema %}` 预设
-- [ ] T008 [US2] 根据 `specs/004-apple-sports-homepage/quickstart.md` 的场景 2 验证分类金刚位功能
+- [x] T007 [P] [US2] 创建 `sections/sports-categories.liquid`，构建分类金刚位 HTML、CSS3 微交互样式及 Block 级 `{% schema %}` 预设
+- [x] T008 [US2] 根据 `specs/004-apple-sports-homepage/quickstart.md` 的场景 2 验证分类金刚位功能
 
 ---
 
@@ -65,8 +65,8 @@
 
 ### 用户故事 3 实现任务
 
-- [ ] T009 [P] [US3] 创建 `sections/sports-featured-collection.liquid`，构建商品网格卡片、绑定 `data-action="quick-view"` 与 `ThemeCartUtils.submitAddToCart`
-- [ ] T010 [US3] 根据 `specs/004-apple-sports-homepage/quickstart.md` 的场景 3 验证展架加购与 Quick View 联动
+- [x] T010 [US3] 根据 `specs/004-apple-sports-homepage/quickstart.md` 的场景 3 验证展架加购与 Quick View 联动
+- [x] T009 [P] [US3] 创建 `sections/sports-featured-collection.liquid`，构建商品网格卡片、绑定 `data-action="quick-view"` 与 `ThemeCartUtils.submitAddToCart`
 
 ---
 
@@ -78,8 +78,8 @@
 
 ### 用户故事 4 实现任务
 
-- [ ] T011 [P] [US4] 创建 `sections/sports-trust-bar.liquid`，构建服务承诺条 HTML、CSS 样式与 Schema 配置
-- [ ] T012 [US4] 更新 `templates/index.json`，编排四大 Section 的呈现顺序与默认预设数据
+- [x] T011 [P] [US4] 创建 `sections/sports-trust-bar.liquid`，构建服务承诺条 HTML、CSS 样式与 Schema 配置
+- [x] T012 [US4] 更新 `templates/index.json`，编排四大 Section 的呈现顺序与默认预设数据
 
 ---
 
@@ -87,8 +87,8 @@
 
 **目标**：移动端响应式优化与端到端测试
 
-- [ ] T013 [P] 优化移动端（手机与平板）小屏视口下的响应式排版与触摸体验
-- [ ] T014 运行完整的端到端 quickstart 验证与代码清理
+- [x] T013 [P] 优化移动端（手机与平板）小屏视口下的响应式排版与触摸体验
+- [x] T014 运行完整的端到端 quickstart 验证与代码清理
 
 ---
 

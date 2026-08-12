@@ -1,0 +1,336 @@
+{%- comment -%}
+  Apple-Style Sports Category Showcase Section
+  Features 20px rounded cards, 1.05x hover zoom, translateY(-6px) elevation, and glassmorphic badges.
+{%- endcomment -%}
+
+<div id="sports-categories" class="sports-categories page-width">
+  <div class="sports-categories__header text-center">
+    {%- assign cat_title = section.settings.title -%}
+    {%- if cat_title == blank -%}
+      {%- assign cat_title = 'home.sports_categories.title' | t -%}
+    {%- endif -%}
+
+    {%- assign cat_subtitle = section.settings.subtitle -%}
+    {%- if cat_subtitle == blank -%}
+      {%- assign cat_subtitle = 'home.sports_categories.subtitle' | t -%}
+    {%- endif -%}
+
+    <h2 class="sports-categories__title">
+      {{ cat_title | escape_once }}
+    </h2>
+    {%- if cat_subtitle != blank -%}
+      <p class="sports-categories__subtitle">
+        {{ cat_subtitle | escape_once }}
+      </p>
+    {%- endif -%}
+  </div>
+
+  <div class="sports-categories__grid">
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        {%- assign raw_title = block.settings.title -%}
+        {%- assign card_title = raw_title -%}
+        {%- if raw_title == 'badminton'
+          or raw_title == '羽毛球 Badminton'
+          or raw_title == '羽毛球'
+          or raw_title == blank
+        -%}
+          {%- assign card_title = 'home.sports_categories.badminton' | t -%}
+        {%- elsif raw_title == 'running' or raw_title == '跑步 Running' or raw_title == '跑步' -%}
+          {%- assign card_title = 'home.sports_categories.running' | t -%}
+        {%- elsif raw_title == 'basketball' or raw_title == '篮球 Basketball' or raw_title == '篮球' -%}
+          {%- assign card_title = 'home.sports_categories.basketball' | t -%}
+        {%- elsif raw_title == 'training' or raw_title == '健身 Training' or raw_title == '健身' -%}
+          {%- assign card_title = 'home.sports_categories.training' | t -%}
+        {%- endif -%}
+
+        <a
+          href="{{ block.settings.link | default: routes.all_products_collection_url }}"
+          class="sports-category-card"
+          {{ block.shopify_attributes }}
+        >
+          <div class="sports-category-card__media">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 600, height: 600, crop: 'center' }}"
+                alt="{{ card_title | escape }}"
+                width="300"
+                height="300"
+                class="sports-category-card__img"
+                loading="lazy"
+              >
+            {%- else -%}
+              <div class="sports-category-card__placeholder">
+                <span class="sports-category-card__emoji">{{ block.settings.emoji | default: '🏸' }}</span>
+              </div>
+            {%- endif -%}
+            <div class="sports-category-card__overlay"></div>
+          </div>
+
+          <div class="sports-category-card__content">
+            <span class="sports-category-card__badge">EXPLORE</span>
+            <h3 class="sports-category-card__title">{{ card_title | escape_once }}</h3>
+          </div>
+        </a>
+      {%- endfor -%}
+    {%- else -%}
+      {%- comment -%} Default 4 Categories if no blocks configured {%- endcomment -%}
+      <a href="{{ routes.all_products_collection_url }}" class="sports-category-card">
+        <div class="sports-category-card__media">
+          <div class="sports-category-card__placeholder"><span class="sports-category-card__emoji">🏸</span></div>
+          <div class="sports-category-card__overlay"></div>
+        </div>
+        <div class="sports-category-card__content">
+          <span class="sports-category-card__badge">EXPLORE</span>
+          <h3 class="sports-category-card__title">{{ 'home.sports_categories.badminton' | t }}</h3>
+        </div>
+      </a>
+      <a href="{{ routes.all_products_collection_url }}" class="sports-category-card">
+        <div class="sports-category-card__media">
+          <div class="sports-category-card__placeholder"><span class="sports-category-card__emoji">🏃</span></div>
+          <div class="sports-category-card__overlay"></div>
+        </div>
+        <div class="sports-category-card__content">
+          <span class="sports-category-card__badge">EXPLORE</span>
+          <h3 class="sports-category-card__title">{{ 'home.sports_categories.running' | t }}</h3>
+        </div>
+      </a>
+      <a href="{{ routes.all_products_collection_url }}" class="sports-category-card">
+        <div class="sports-category-card__media">
+          <div class="sports-category-card__placeholder"><span class="sports-category-card__emoji">🏀</span></div>
+          <div class="sports-category-card__overlay"></div>
+        </div>
+        <div class="sports-category-card__content">
+          <span class="sports-category-card__badge">EXPLORE</span>
+          <h3 class="sports-category-card__title">{{ 'home.sports_categories.basketball' | t }}</h3>
+        </div>
+      </a>
+      <a href="{{ routes.all_products_collection_url }}" class="sports-category-card">
+        <div class="sports-category-card__media">
+          <div class="sports-category-card__placeholder"><span class="sports-category-card__emoji">🏋️</span></div>
+          <div class="sports-category-card__overlay"></div>
+        </div>
+        <div class="sports-category-card__content">
+          <span class="sports-category-card__badge">EXPLORE</span>
+          <h3 class="sports-category-card__title">{{ 'home.sports_categories.training' | t }}</h3>
+        </div>
+      </a>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .sports-categories {
+    padding-top: 40px;
+    padding-bottom: 60px;
+  }
+
+  .sports-categories__header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .sports-categories__title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.02em;
+    color: #111111;
+  }
+
+  .sports-categories__subtitle {
+    font-size: 1rem;
+    color: #666666;
+    margin: 0;
+  }
+
+  .sports-categories__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  /* Card Component */
+  .sports-category-card {
+    position: relative;
+    aspect-ratio: 1 / 1.15;
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  }
+
+  .sports-category-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .sports-category-card__media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sports-category-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sports-category-card:hover .sports-category-card__img {
+    transform: scale(1.06);
+  }
+
+  .sports-category-card__placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f5f5f7 0%, #e5e5ea 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sports-category-card__emoji {
+    font-size: 3.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .sports-category-card:hover .sports-category-card__emoji {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  .sports-category-card__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.75) 100%);
+  }
+
+  .sports-category-card__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    z-index: 2;
+    color: #ffffff;
+  }
+
+  .sports-category-card__badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+
+  .sports-category-card__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    color: #ffffff;
+  }
+
+  @media (max-width: 990px) {
+    .sports-categories__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .sports-categories__grid {
+      grid-template-columns: 1fr;
+    }
+    .sports-category-card {
+      aspect-ratio: 1 / 0.75;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Sports Categories",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Explore By Sport"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Engineered for excellence. Precision gear tailored for your arena."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Sports Category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Title",
+          "default": "Badminton"
+        },
+        {
+          "type": "text",
+          "id": "emoji",
+          "label": "Fallback Emoji Icon",
+          "default": "🏸"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Cover Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Category Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sports Categories",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": { "title": "羽毛球 Badminton", "emoji": "🏸" }
+        },
+        {
+          "type": "category",
+          "settings": { "title": "跑步 Running", "emoji": "🏃" }
+        },
+        {
+          "type": "category",
+          "settings": { "title": "篮球 Basketball", "emoji": "🏀" }
+        },
+        {
+          "type": "category",
+          "settings": { "title": "健身 Training", "emoji": "🏋️" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

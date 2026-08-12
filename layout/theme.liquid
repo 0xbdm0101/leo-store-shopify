@@ -34,12 +34,6 @@
     {% # Geo-location recommendation banner (shown on first visit) %}
     {% render 'geo-recommendation' %}
 
-    {% # Language & currency selectors (header) %}
-    <div class="locale-bar page-width" style="display: flex; justify-content: flex-end; gap: 1rem; padding: 0.5rem 0; font-size: 0.8125rem;">
-      {% render 'locale-selector', type: 'language', position: 'header', style: 'dropdown' %}
-      {% render 'locale-selector', type: 'currency', position: 'header', style: 'dropdown' %}
-    </div>
-
     {% sections 'header-group' %}
 
     {{ content_for_layout }}

@@ -1,20 +1,87 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "sports_hero": {
+      "type": "sports-hero",
+      "settings": {
+        "badge_text": "",
+        "heading": "",
+        "subheading": "",
+        "button_label": "",
+        "secondary_button_label": ""
+      }
+    },
+    "sports_categories": {
+      "type": "sports-categories",
+      "blocks": {
+        "cat_1": {
+          "type": "category",
+          "settings": { "title": "badminton", "emoji": "🏸" }
+        },
+        "cat_2": {
+          "type": "category",
+          "settings": { "title": "running", "emoji": "🏃" }
+        },
+        "cat_3": {
+          "type": "category",
+          "settings": { "title": "basketball", "emoji": "🏀" }
+        },
+        "cat_4": {
+          "type": "category",
+          "settings": { "title": "training", "emoji": "🏋️" }
+        }
+      },
+      "block_order": [
+        "cat_1",
+        "cat_2",
+        "cat_3",
+        "cat_4"
+      ],
+      "settings": {
+        "title": "",
+        "subtitle": ""
+      }
+    },
+    "sports_featured": {
+      "type": "sports-featured-collection",
+      "settings": {
+        "title": "",
+        "subtitle": "",
+        "products_to_show": 8
+      }
+    },
+    "sports_trust": {
+      "type": "sports-trust-bar",
+      "blocks": {
+        "trust_1": {
+          "type": "trust_item",
+          "settings": { "icon": "🛡️", "title": "guarantee", "description": "" }
+        },
+        "trust_2": {
+          "type": "trust_item",
+          "settings": { "icon": "🚚", "title": "shipping", "description": "" }
+        },
+        "trust_3": {
+          "type": "trust_item",
+          "settings": { "icon": "🔄", "title": "returns", "description": "" }
+        },
+        "trust_4": {
+          "type": "trust_item",
+          "settings": { "icon": "🏸", "title": "support", "description": "" }
+        }
+      },
+      "block_order": [
+        "trust_1",
+        "trust_2",
+        "trust_3",
+        "trust_4"
+      ],
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "sports_hero",
+    "sports_categories",
+    "sports_featured",
+    "sports_trust"
   ]
 }

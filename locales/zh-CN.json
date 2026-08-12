@@ -1,4 +1,12 @@
 {
+  "header": {
+    "settings_title": "偏好与设置",
+    "language_label": "切换语言",
+    "currency_label": "切换货币",
+    "home_menu": "首页",
+    "products_menu": "所有装备",
+    "categories_menu": "分类探索"
+  },
   "404": {
     "title": "404",
     "not_found": "页面未找到。",
@@ -96,25 +104,38 @@
   "home": {
     "hero": {
       "title": "你好，世界！",
-      "description": "Skeleton 主题是一个简洁、结构清晰的 Shopify 主题，帮助你快速上手。设计理念是模块化、可维护，并遵循 Shopify 最佳实践。",
-      "description2": "主题塑造了商家及其客户的在线商店体验。使用 Liquid（Shopify 的模板语言）以及 HTML、CSS、JavaScript 和 JSON，大规模构建快速、灵活的主题。"
+      "description": "Skeleton 主题是一个简洁、结构清晰的 Shopify 主题，帮助你快速上手。",
+      "description2": "主题塑造了商家及其客户的在线商店体验。"
     },
-    "sections": {
-      "key_concepts": {
-        "title": "核心概念",
-        "description": "Shopify 主题是由模板文件、构建块和支持资源组成的包。使用这些构建块来创建模块化、可自定义的主题。",
-        "link_text": "了解更多核心概念"
-      },
-      "liquid": {
-        "title": "Liquid",
-        "description": "Liquid 模板语言是 Shopify 主题的支柱，用于在店铺前端加载动态内容。扩展 Liquid 对象以使用 metafields 存储和呈现自定义数据。",
-        "link_text": "查看 Liquid 参考文档"
-      },
-      "best_practices": {
-        "title": "最佳实践",
-        "description": "为了优化你的主题开发体验，Shopify 制定了一套最佳实践，在开发主题和设置工具链与流程时可以参考。",
-        "link_text": "遵循最佳实践"
-      }
+    "sports_hero": {
+      "badge": "2026 竞技运动专业系列",
+      "title": "超越极限 · 释放运动潜能",
+      "subtitle": "探索全新一代专业羽毛球装备、精密运动科技与高品质竞技运动服装。",
+      "button_label": "探索热销装备",
+      "secondary_label": "浏览运动分类"
+    },
+    "sports_categories": {
+      "title": "按运动项目探索",
+      "subtitle": "专为卓越而生。为你的专属赛场精准匹配专业装备。",
+      "badminton": "羽毛球",
+      "running": "跑步",
+      "basketball": "篮球",
+      "training": "健身"
+    },
+    "sports_featured": {
+      "title": "极速赛场 · 精选装备展架",
+      "subtitle": "深受全球运动爱好者与职业选手信赖的专业装备。",
+      "view_all": "查看所有商品"
+    },
+    "sports_trust": {
+      "guarantee_title": "100% 官方正品保证",
+      "guarantee_desc": "品牌正规授权渠道 假一赔十",
+      "shipping_title": "极速发货 全程追踪",
+      "shipping_desc": "高效仓储物流 全程实时追踪",
+      "returns_title": "30 天无忧退换承诺",
+      "returns_desc": "支持七天无理由退换 轻松换货",
+      "support_title": "专业运动顾问支持",
+      "support_desc": "一对一选拍与球拍拉线建议"
     }
   }
 }
