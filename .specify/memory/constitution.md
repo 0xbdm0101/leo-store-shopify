@@ -92,8 +92,15 @@ Every snippet and statically-rendered block MUST include a `{% doc %}` header do
 - Optional parameters marked with brackets (`@param {type} [name]`)
 - Usage examples (`@example`)
 
-**Rationale**: Snippets are shared across the theme by multiple developers and AI agents.
-Without documentation, parameters are guesswork, leading to broken renders and wasted time.
+### VI. Premium Apple-Style Sports Aesthetics (NON-NEGOTIABLE)
+
+All UI design and storefront components MUST embody a high-energy, modern sports aesthetic infused with Apple-inspired design principles:
+
+- **Visual Style**: Glassmorphism (`backdrop-filter: blur(...)`), subtle smooth gradients, high-contrast dark accents (#000000, #111111, vibrant athletic highlights), and generous whitespace.
+- **Rounded Geometry**: Modern rounded corners (`border-radius: 16px` to `24px` for cards/modals, `999px` for pill tags/buttons).
+- **CSS3 Micro-Interactions**: Smooth hover elevations (`transform: translateY(-4px)`), scale transitions, active feedback, and subtle glow effects.
+- **Typography & Clean Layout**: Bold athletic headlines, crisp secondary metadata, clean hierarchy without clutter.
+- **No Boring MVP Placeholders**: Components MUST look premium, polished, and WOW the merchant at first glance.
 
 ## Quality Standards
 
@@ -158,4 +165,4 @@ All feature specifications and implementation plans MUST include a constitution
 compliance check. Violations require explicit justification in the plan's
 Complexity Tracking section.
 
-**Version**: 1.0.0 | **Ratified**: 2026-07-25 | **Last Amended**: 2026-07-25
+**Version**: 1.1.0 | **Ratified**: 2026-07-25 | **Last Amended**: 2026-08-11
