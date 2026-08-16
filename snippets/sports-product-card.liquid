@@ -78,7 +78,7 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    height: 100%;
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
   }
 
@@ -96,6 +96,7 @@
     overflow: hidden;
     background-color: #f7f7f7;
     margin-bottom: 14px;
+    flex-shrink: 0;
   }
 
   .sports-card__image {
@@ -163,6 +164,8 @@
   .sports-card__info {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
     gap: 6px;
   }
 
@@ -178,6 +181,13 @@
     font-weight: 700;
     margin: 0;
     line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.7em;
+    max-height: 2.7em;
   }
 
   .sports-card__title a {
@@ -193,9 +203,10 @@
 
   .sports-card__price-row {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
-    margin-top: 2px;
+    margin-top: 4px;
+    flex-wrap: wrap;
   }
 
   .sports-card__price {
@@ -207,6 +218,7 @@
   .sports-card__compare-price {
     font-size: 0.85rem;
     color: #999999;
+    text-decoration: line-through;
   }
 
   .sports-card__add-form {
