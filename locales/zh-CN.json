@@ -45,10 +45,12 @@
     "product": {
       "quick_view": "快速预览",
       "add_to_cart": "加入购物车",
+      "buy_now": "立即购买",
       "sold_out": "已售罄",
       "unavailable": "不可用",
       "view_full_details": "查看完整详情",
-      "close_quick_view": "关闭快速预览"
+      "close_quick_view": "关闭快速预览",
+      "description": "商品详情"
     }
   },
   "customers": {
@@ -96,10 +98,18 @@
   },
   "search": {
     "title": "搜索",
-    "placeholder": "搜索文章、页面或产品",
+    "drawer_title": "搜索装备与商品",
+    "placeholder": "搜索羽球拍、跑鞋、比赛服...",
     "submit": "搜索",
+    "trending": "热门搜索",
+    "products_heading": "匹配装备",
+    "queries_heading": "搜索建议",
+    "no_results": "未找到与 \"{{ terms }}\" 相关的装备",
     "no_results_html": "未找到与 {{ terms }} 相关的结果",
-    "results_for_html": "找到 {{ count }} 个与 {{ terms }} 相关的结果"
+    "results_for_html": "找到 {{ count }} 个与 {{ terms }} 相关的结果",
+    "no_results_suggestion": "请尝试检查错别字，或点击上方热门词汇搜索",
+    "view_all_results": "查看全部搜索结果",
+    "quick_add": "快捷加购"
   },
   "home": {
     "hero": {

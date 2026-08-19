@@ -45,10 +45,12 @@
     "product": {
       "quick_view": "Aperçu rapide",
       "add_to_cart": "Ajouter au panier",
+      "buy_now": "Acheter maintenant",
       "sold_out": "Épuisé",
       "unavailable": "Indisponible",
       "view_full_details": "Voir tous les détails",
-      "close_quick_view": "Fermer l'aperçu rapide"
+      "close_quick_view": "Fermer l'aperçu rapide",
+      "description": "Détails du produit"
     }
   },
   "customers": {
@@ -95,11 +97,19 @@
     }
   },
   "search": {
-    "title": "Rechercher",
-    "placeholder": "Rechercher des articles, pages ou produits",
+    "title": "Recherche",
+    "drawer_title": "Rechercher des équipements",
+    "placeholder": "Rechercher des raquettes, chaussures...",
     "submit": "Rechercher",
+    "trending": "Recherches populaires",
+    "products_heading": "Équipements trouvés",
+    "queries_heading": "Suggestions",
+    "no_results": "Aucun résultat trouvé pour \"{{ terms }}\"",
     "no_results_html": "Aucun résultat trouvé pour {{ terms }}",
-    "results_for_html": "{{ count }} résultats trouvés pour {{ terms }}"
+    "results_for_html": "{{ count }} résultats trouvés pour {{ terms }}",
+    "no_results_suggestion": "Vérifiez l'orthographe ou essayez un mot-clé ci-dessus",
+    "view_all_results": "Voir tous les résultats",
+    "quick_add": "Ajout rapide"
   },
   "home": {
     "hero": {

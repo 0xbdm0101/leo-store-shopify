@@ -1,49 +1,773 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+{%- comment -%}
+  Apple-Style Immersive Sports Product Details Page (PDP) Section
+  Features interactive image gallery, variant pills selector, quantity stepper,
+  1-click Ajax add to cart, trust badges, and rich product description panels.
+{%- endcomment -%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
+<div class="sports-pdp full-width">
+  <div class="sports-pdp__container page-width">
+    
+    <!-- Breadcrumb Navigation -->
+    <nav class="sports-pdp__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">{{ 'header.home_menu' | t }}</a>
+      <span class="sports-pdp__breadcrumb-sep">/</span>
+      <a href="{{ routes.all_products_collection_url }}">{{ 'header.products_menu' | t }}</a>
+      <span class="sports-pdp__breadcrumb-sep">/</span>
+      <span class="sports-pdp__breadcrumb-current">{{ product.title | escape }}</span>
+    </nav>
+
+    <!-- Two-Column Product Layout -->
+    <div class="sports-pdp__grid">
+      
+      <!-- Left Column: Interactive Image Gallery -->
+      <div class="sports-pdp__gallery">
+        <div class="sports-pdp__stage">
+          {%- if current_variant.compare_at_price > current_variant.price -%}
+            <span class="sports-pdp__sale-badge">SALE</span>
+          {%- endif -%}
+
+          {%- if featured_image -%}
+            <img src="{{ featured_image | image_url: width: 1200 }}"
+                 alt="{{ featured_image.alt | default: product.title | escape }}"
+                 id="PDPMainImage"
+                 class="sports-pdp__main-image"
+                 width="600"
+                 height="600"
+                 loading="eager">
+          {%- else -%}
+            <div class="sports-pdp__placeholder"></div>
+          {%- endif -%}
+        </div>
+
+        {%- if product.images.size > 1 -%}
+          <div class="sports-pdp__thumbnails">
+            {%- for image in product.images -%}
+              <button type="button"
+                      class="sports-pdp__thumb-btn{% if image == featured_image %} is-active{% endif %}"
+                      data-image-src="{{ image | image_url: width: 1200 }}"
+                      aria-label="View Product Image {{ forloop.index }}">
+                <img src="{{ image | image_url: width: 200, height: 200, crop: 'center' }}"
+                     alt="{{ image.alt | default: product.title | escape }}"
+                     width="80"
+                     height="80"
+                     loading="lazy">
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <!-- Right Column: Product Info & Purchase Panel -->
+      <div class="sports-pdp__info">
+        {%- if product.vendor != blank -%}
+          <div class="sports-pdp__vendor">⚡ {{ product.vendor | escape }}</div>
+        {%- endif -%}
+
+        <h1 class="sports-pdp__title">{{ product.title | escape }}</h1>
+
+        <!-- Price Showcase -->
+        <div class="sports-pdp__price-box">
+          <span class="sports-pdp__price" id="PDPPrice">{{ current_variant.price | money }}</span>
+          {%- if current_variant.compare_at_price > current_variant.price -%}
+            <s class="sports-pdp__compare-price" id="PDPComparePrice">{{ current_variant.compare_at_price | money }}</s>
+          {%- endif -%}
+
+          {%- if current_variant.available -%}
+            <span class="sports-pdp__stock-badge sports-pdp__stock-badge--in">有货</span>
+          {%- else -%}
+            <span class="sports-pdp__stock-badge sports-pdp__stock-badge--out">{{ 'products.product.sold_out' | t }}</span>
+          {%- endif -%}
+        </div>
+
+        <!-- Trust Highlights Bar -->
+        <div class="sports-pdp__trust-bar">
+          <div class="sports-pdp__trust-item">
+            <span>🛡️ 100% 正品保证</span>
+          </div>
+          <div class="sports-pdp__trust-item">
+            <span>🚚 极速发货 全程追踪</span>
+          </div>
+          <div class="sports-pdp__trust-item">
+            <span>🔄 30 天无忧退换</span>
+          </div>
+        </div>
+
+        <!-- Add to Cart Form -->
+        {% form 'product', product, id: 'PDPProductForm', class: 'sports-pdp__form' %}
+          <input type="hidden" name="id" id="PDPVariantId" value="{{ current_variant.id }}">
+
+          <!-- Variant Selector Pills -->
+          {%- if product.variants.size > 1 -%}
+            <div class="sports-pdp__variants">
+              <label class="sports-pdp__label">选择规格：</label>
+              <div class="sports-pdp__variant-pills">
+                {%- for variant in product.variants -%}
+                  <button type="button"
+                          class="sports-pdp__variant-pill{% if variant == current_variant %} is-active{% endif %}{% unless variant.available %} is-disabled{% endunless %}"
+                          data-variant-id="{{ variant.id }}"
+                          data-variant-price="{{ variant.price | money }}"
+                          data-variant-compare="{{ variant.compare_at_price | money }}"
+                          data-available="{{ variant.available }}">
+                    {{ variant.title | escape }}
+                  </button>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+
+          <!-- Quantity Stepper -->
+          <div class="sports-pdp__quantity-row">
+            <label for="PDPQuantity" class="sports-pdp__label">数量：</label>
+            <div class="sports-pdp__quantity-stepper">
+              <button type="button" class="sports-pdp__stepper-btn" id="PDPQtyMinus" aria-label="Decrease Quantity">-</button>
+              <input type="number" id="PDPQuantity" name="quantity" min="1" value="1" class="sports-pdp__stepper-input">
+              <button type="button" class="sports-pdp__stepper-btn" id="PDPQtyPlus" aria-label="Increase Quantity">+</button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="sports-pdp__actions">
+            <!-- Single Primary Action: Direct Buy Now Button -->
+            <button type="button"
+                    id="PDPBuyNowBtn"
+                    class="sports-pdp__buy-now-btn"
+                    {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+              ⚡ {{ 'products.product.buy_now' | t }}
+            </button>
+
+            <!-- Secondary Action: Add to Cart Button -->
+            <button type="submit"
+                    name="add"
+                    id="PDPAddToCartBtn"
+                    class="sports-pdp__add-btn"
+                    {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+              {%- if current_variant.available -%}
+                🛒 {{ 'products.product.add_to_cart' | t }}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </button>
+          </div>
+        {% endform %}
+
+        <!-- Collapsible Product Details Accordion -->
+        <div class="sports-pdp__details-box">
+          <div class="sports-pdp__accordion">
+            <h3 class="sports-pdp__accordion-title">📋 {{ 'products.product.description' | t }}</h3>
+            <div class="sports-pdp__accordion-content">
+              {%- if product.description != blank -%}
+                {{ product.description }}
+              {%- else -%}
+                <p>这款专业运动装备具备超强吸震、轻量化与碳板支撑科技，为您的赛场发挥保驾护航。</p>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Recommended Products Section -->
+    {%- if collections.all.products.size > 1 -%}
+      <div class="sports-pdp__recommendations">
+        <h2 class="sports-pdp__recommendations-title">⚡ 您可能还喜欢</h2>
+        <div class="sports-pdp__recommendations-grid">
+          {%- assign rec_count = 0 -%}
+          {%- for rec_product in collections.all.products -%}
+            {%- if rec_product.id != product.id and rec_count < 4 -%}
+              {% render 'sports-product-card', product: rec_product %}
+              {%- assign rec_count = rec_count | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+  </div>
 </div>
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+{% stylesheet %}
+  .sports-pdp {
+    width: 100%;
+    min-height: 80vh;
+    padding: 30px 0 80px;
+    background-color: #fafafa;
+  }
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+  .sports-pdp__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+  /* Breadcrumbs */
+  .sports-pdp__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #777777;
+    margin-bottom: 24px;
+  }
 
-    <input type="text" name="quantity" min="1" value="1">
+  .sports-pdp__breadcrumb a {
+    color: #444444;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+  .sports-pdp__breadcrumb a:hover {
+    color: #000000;
+  }
+
+  .sports-pdp__breadcrumb-current {
+    color: #000000;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
+
+  /* Main Grid */
+  .sports-pdp__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* Gallery Column */
+  .sports-pdp__gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sports-pdp__stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e5ea;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+  }
+
+  .sports-pdp__main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .sports-pdp__stage:hover .sports-pdp__main-image {
+    transform: scale(1.05);
+  }
+
+  .sports-pdp__sale-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 6px 14px;
+    background: #ff3b30;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 900;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    z-index: 2;
+  }
+
+  .sports-pdp__thumbnails {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .sports-pdp__thumb-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 14px;
+    border: 2px solid #e0e0e6;
+    overflow: hidden;
+    background: #ffffff;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .sports-pdp__thumb-btn.is-active,
+  .sports-pdp__thumb-btn:hover {
+    border-color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .sports-pdp__thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Info Column */
+  .sports-pdp__info {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid #e5e5ea;
+    padding: 36px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sports-pdp__vendor {
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #777777;
+  }
+
+  .sports-pdp__title {
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: #111111;
+    margin: 0;
+  }
+
+  /* Price Box */
+  .sports-pdp__price-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: -4px;
+  }
+
+  .sports-pdp__price {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #000000;
+  }
+
+  .sports-pdp__compare-price {
+    font-size: 1.1rem;
+    color: #999999;
+    text-decoration: line-through;
+  }
+
+  .sports-pdp__stock-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  .sports-pdp__stock-badge--in {
+    background: #e6f7ed;
+    color: #12803b;
+  }
+
+  .sports-pdp__stock-badge--out {
+    background: #ffebe9;
+    color: #d9381e;
+  }
+
+  /* Trust Bar */
+  .sports-pdp__trust-bar {
+    display: flex;
+    gap: 12px;
+    background: #f7f7f9;
+    padding: 14px 18px;
+    border-radius: 16px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #333333;
+    flex-wrap: wrap;
+  }
+
+  /* Variant Pills */
+  .sports-pdp__variants {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sports-pdp__label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #444444;
+  }
+
+  .sports-pdp__variant-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sports-pdp__variant-pill {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: 1px solid #dcdce2;
+    background: #ffffff;
+    color: #111111;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .sports-pdp__variant-pill:hover {
+    border-color: #000000;
+  }
+
+  .sports-pdp__variant-pill.is-active {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  }
+
+  .sports-pdp__variant-pill.is-disabled {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+
+  /* Quantity Stepper */
+  .sports-pdp__quantity-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+  }
+
+  .sports-pdp__quantity-stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #dcdce2;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .sports-pdp__stepper-btn {
+    width: 38px;
+    height: 38px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333333;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .sports-pdp__stepper-btn:hover {
+    background: #f0f0f4;
+  }
+
+  .sports-pdp__stepper-input {
+    width: 44px;
+    height: 38px;
+    border: none;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #111111;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  .sports-pdp__stepper-input::-webkit-outer-spin-button,
+  .sports-pdp__stepper-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Action Buttons Group */
+  .sports-pdp__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  /* Primary Action: Direct Buy Now / Checkout (Dominant & Eye-Catching) */
+  .sports-pdp__buy-now-btn {
+    width: 100%;
+    height: 56px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #000000 0%, #1c1c1e 100%);
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .sports-pdp__buy-now-btn:hover:not([disabled]) {
+    background: #000000;
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.38);
+  }
+
+  .sports-pdp__buy-now-btn[disabled] {
+    background: #e0e0e6;
+    color: #999999;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Secondary Action: Add to Cart (Subdued Modern Outline) */
+  .sports-pdp__add-btn {
+    width: 100%;
+    height: 50px;
+    border-radius: 999px;
+    background: #f4f4f7;
+    color: #111111;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border: 1.5px solid #dcdce2;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .sports-pdp__add-btn:hover:not([disabled]) {
+    background: #ffffff;
+    border-color: #000000;
+    color: #000000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .sports-pdp__add-btn[disabled] {
+    background: #f0f0f4;
+    color: #aaaaaa;
+    border-color: #e0e0e6;
+    cursor: not-allowed;
+  }
+
+  /* Details Box Accordion */
+  .sports-pdp__details-box {
+    border-top: 1px solid #eeeeee;
+    padding-top: 20px;
+    margin-top: 10px;
+  }
+
+  .sports-pdp__accordion-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #111111;
+    margin-bottom: 12px;
+  }
+
+  .sports-pdp__accordion-content {
+    font-size: 0.92rem;
+    color: #555555;
+    line-height: 1.6;
+  }
+
+  /* Recommendations */
+  .sports-pdp__recommendations {
+    margin-top: 60px;
+  }
+
+  .sports-pdp__recommendations-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #111111;
+    margin-bottom: 24px;
+  }
+
+  .sports-pdp__recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+  }
+
+  @media (max-width: 900px) {
+    .sports-pdp__grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .sports-pdp__info {
+      padding: 24px;
+    }
+
+    .sports-pdp__title {
+      font-size: 1.4rem;
+    }
+
+    .sports-pdp__price {
+      font-size: 1.4rem;
+    }
+
+    .sports-pdp__recommendations-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    var mainImage = document.getElementById('PDPMainImage');
+    var variantIdInput = document.getElementById('PDPVariantId');
+    var priceEl = document.getElementById('PDPPrice');
+    var comparePriceEl = document.getElementById('PDPComparePrice');
+    var addBtn = document.getElementById('PDPAddToCartBtn');
+    var qtyInput = document.getElementById('PDPQuantity');
+
+    // Thumbnail Switcher
+    document.querySelectorAll('.sports-pdp__thumb-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.sports-pdp__thumb-btn').forEach(function(b) { b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        var src = btn.getAttribute('data-image-src');
+        if (mainImage && src) mainImage.src = src;
+      });
+    });
+
+    // Variant Pills Switcher
+    document.querySelectorAll('.sports-pdp__variant-pill').forEach(function(pill) {
+      pill.addEventListener('click', function() {
+        document.querySelectorAll('.sports-pdp__variant-pill').forEach(function(p) { p.classList.remove('is-active'); });
+        pill.classList.add('is-active');
+
+        var variantId = pill.getAttribute('data-variant-id');
+        var price = pill.getAttribute('data-variant-price');
+        var compare = pill.getAttribute('data-variant-compare');
+        var available = pill.getAttribute('data-available') === 'true';
+
+        if (variantIdInput) variantIdInput.value = variantId;
+        if (priceEl && price) priceEl.textContent = price;
+        if (comparePriceEl) {
+          if (compare && compare !== '$0.00') {
+            comparePriceEl.textContent = compare;
+            comparePriceEl.style.display = 'inline';
+          } else {
+            comparePriceEl.style.display = 'none';
+          }
+        }
+
+        if (addBtn) {
+          if (available) {
+            addBtn.removeAttribute('disabled');
+            addBtn.innerHTML = '🛒 加入购物车 Add to Cart';
+          } else {
+            addBtn.setAttribute('disabled', 'disabled');
+            addBtn.innerHTML = '已售罄 Sold Out';
+          }
+        }
+      });
+    });
+
+    // Quantity Stepper
+    var minusBtn = document.getElementById('PDPQtyMinus');
+    var plusBtn = document.getElementById('PDPQtyPlus');
+
+    if (minusBtn && qtyInput) {
+      minusBtn.addEventListener('click', function() {
+        var val = parseInt(qtyInput.value) || 1;
+        if (val > 1) qtyInput.value = val - 1;
+      });
+    }
+
+    if (plusBtn && qtyInput) {
+      plusBtn.addEventListener('click', function() {
+        var val = parseInt(qtyInput.value) || 1;
+        qtyInput.value = val + 1;
+      });
+    }
+
+    // Buy Now Direct Checkout Button
+    var buyNowBtn = document.getElementById('PDPBuyNowBtn');
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var variantId = variantIdInput ? variantIdInput.value : null;
+        var qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+        if (!variantId) return;
+
+        buyNowBtn.innerHTML = '⚡ 正在跳转结账...';
+        buyNowBtn.disabled = true;
+
+        var itemsData = {
+          items: [{ id: parseInt(variantId), quantity: qty }]
+        };
+
+        var rootPath = window.Shopify && window.Shopify.routes ? window.Shopify.routes.root : '/';
+
+        fetch(rootPath + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(itemsData)
+        })
+        .then(function() {
+          window.location.href = rootPath + 'checkout';
+        })
+        .catch(function() {
+          window.location.href = rootPath + 'checkout';
+        });
+      });
+    }
+
+    // Ajax Form Submit
+    var form = document.getElementById('PDPProductForm');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        if (window.ThemeCartUtils) {
+          e.preventDefault();
+          var submitBtn = form.querySelector('[type="submit"]');
+          var origText = submitBtn.innerHTML;
+          submitBtn.innerHTML = '⏳ 处理中...';
+          submitBtn.disabled = true;
+
+          var formData = new FormData(form);
+          window.ThemeCartUtils.submitAddToCart(formData)
+            .then(function() {
+              submitBtn.innerHTML = '✓ 已加入购物车';
+              setTimeout(function() {
+                submitBtn.innerHTML = origText;
+                submitBtn.disabled = false;
+              }, 1500);
+            })
+            .catch(function() {
+              submitBtn.innerHTML = origText;
+              submitBtn.disabled = false;
+            });
+        }
+      });
+    }
+  });
+{% endjavascript %}
 
 {% schema %}
 {
-  "name": "t:general.product",
+  "name": "Sports Product Page",
   "settings": [],
   "disabled_on": {
     "groups": ["header", "footer"]

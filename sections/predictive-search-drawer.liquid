@@ -1,0 +1,641 @@
+{%- comment -%}
+  Apple-Style Smart Live Predictive Search Drawer Section
+  Integrates with Shopify Predictive Search API (/search/suggest.json)
+  Features 300ms debouncing, skeleton loaders, trending pill tags, product preview cards, and full i18n support.
+{%- endcomment -%}
+
+<div class="search-drawer" id="SearchDrawer" aria-hidden="true">
+  <div class="search-drawer__overlay" data-action="close-search-drawer"></div>
+  <div class="search-drawer__content">
+    
+    <!-- Drawer Header -->
+    <div class="search-drawer__header">
+      <h2 class="search-drawer__title">{{ 'search.drawer_title' | t }}</h2>
+      <button type="button" class="search-drawer__close-btn" data-action="close-search-drawer" aria-label="Close Search">&times;</button>
+    </div>
+
+    <!-- Search Input Box -->
+    <div class="search-drawer__input-box">
+      <div class="search-drawer__input-wrapper">
+        <svg class="search-drawer__input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+
+        <input type="search"
+               id="SearchDrawerInput"
+               class="search-drawer__input"
+               placeholder="{{ 'search.placeholder' | t }}"
+               autocomplete="off"
+               autocorrect="off"
+               capitalize="off"
+               spellcheck="false">
+
+        <button type="button" class="search-drawer__clear-btn" id="SearchDrawerClear" aria-label="Clear Search" style="display: none;">&times;</button>
+      </div>
+    </div>
+
+    <!-- Search Body Container -->
+    <div class="search-drawer__body" id="SearchDrawerBody">
+      
+      <!-- 1. Trending Searches (Empty Input State) -->
+      <div class="search-drawer__trending" id="SearchDrawerTrending">
+        <span class="search-drawer__section-label">🔥 {{ 'search.trending' | t }}</span>
+        <div class="search-drawer__tags">
+          <button type="button" class="search-drawer__tag-btn" data-search-term="羽球拍">🏸 羽球拍 Rackets</button>
+          <button type="button" class="search-drawer__tag-btn" data-search-term="运动鞋">👟 运动鞋 Shoes</button>
+          <button type="button" class="search-drawer__tag-btn" data-search-term="比赛服">🎽 比赛服 Jerseys</button>
+          <button type="button" class="search-drawer__tag-btn" data-search-term="护具">🛡️ 护具 Guards</button>
+        </div>
+      </div>
+
+      <!-- 2. Loading Skeleton State -->
+      <div class="search-drawer__skeleton" id="SearchDrawerSkeleton" style="display: none;">
+        <div class="search-drawer__skeleton-item"></div>
+        <div class="search-drawer__skeleton-item"></div>
+        <div class="search-drawer__skeleton-item"></div>
+      </div>
+
+      <!-- 3. Dynamic Results Container -->
+      <div class="search-drawer__results" id="SearchDrawerResults" style="display: none;"></div>
+
+      <!-- 4. Empty Results State -->
+      <div class="search-drawer__no-results" id="SearchDrawerNoResults" style="display: none;">
+        <div class="search-drawer__no-results-icon">🔍</div>
+        <h3 class="search-drawer__no-results-title" id="SearchDrawerNoResultsTitle"></h3>
+        <p class="search-drawer__no-results-desc">{{ 'search.no_results_suggestion' | t }}</p>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer Link -->
+    <div class="search-drawer__footer" id="SearchDrawerFooter" style="display: none;">
+      <a href="#" class="search-drawer__view-all-btn" id="SearchDrawerViewAllLink">
+        {{ 'search.view_all_results' | t }} &rarr;
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% stylesheet %}
+  .search-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    max-width: 100%;
+    box-sizing: border-box;
+    z-index: 9999999;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s ease, opacity 0.3s ease;
+  }
+
+  .search-drawer.is-active {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .search-drawer__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1;
+  }
+
+  .search-drawer__content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 440px;
+    max-width: 90vw;
+    height: 100vh;
+    background: #ffffff;
+    color: #111111;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .search-drawer.is-active .search-drawer__content {
+    transform: translateX(0);
+  }
+
+  .search-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eeeeee;
+    flex-shrink: 0;
+    background: #ffffff;
+  }
+
+  .search-drawer__title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #111111;
+    margin: 0;
+  }
+
+  .search-drawer__close-btn {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #666666;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* Input Container */
+  .search-drawer__input-box {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f4;
+    background: #ffffff;
+    flex-shrink: 0;
+  }
+
+  .search-drawer__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .search-drawer__input-icon {
+    position: absolute;
+    left: 14px;
+    color: #888888;
+    pointer-events: none;
+  }
+
+  .search-drawer__input {
+    width: 100%;
+    height: 48px;
+    padding: 0 40px 0 44px;
+    border-radius: 12px;
+    border: 1px solid #e0e0e6;
+    background-color: #f7f7f9;
+    color: #111111;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .search-drawer__input::-webkit-search-decoration,
+  .search-drawer__input::-webkit-search-cancel-button,
+  .search-drawer__input::-webkit-search-results-button,
+  .search-drawer__input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  .search-drawer__input:focus {
+    border-color: #000000;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .search-drawer__clear-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #888888;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* Body Container */
+  .search-drawer__body {
+    flex: 1;
+    padding: 20px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .search-drawer__section-label {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #777777;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  /* Trending Tags */
+  .search-drawer__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .search-drawer__tag-btn {
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid #e0e0e6;
+    background: #f7f7f9;
+    color: #222222;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .search-drawer__tag-btn:hover {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+    transform: translateY(-1px);
+  }
+
+  /* Skeleton Loading */
+  .search-drawer__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .search-drawer__skeleton-item {
+    height: 72px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #f0f0f4 25%, #e6e6ec 50%, #f0f0f4 75%);
+    background-size: 200% 100%;
+    animation: search-skeleton 1.5s infinite;
+  }
+
+  @keyframes search-skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Search Product Card Result */
+  .search-drawer__product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-drawer__product-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid #f0f0f4;
+    background: #ffffff;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+  }
+
+  .search-drawer__product-card:hover {
+    background: #f8f8fb;
+    border-color: #dcdce2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .search-drawer__product-img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f7f7f9;
+    flex-shrink: 0;
+  }
+
+  .search-drawer__product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .search-drawer__product-vendor {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888888;
+  }
+
+  .search-drawer__product-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #111111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  .search-drawer__product-price {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-drawer__product-compare-price {
+    font-size: 0.78rem;
+    text-decoration: line-through;
+    color: #999999;
+    font-weight: 500;
+  }
+
+  .search-drawer__product-add-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #000000;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+  }
+
+  .search-drawer__product-add-btn:hover {
+    background: #333333;
+  }
+
+  /* Query Suggestions */
+  .search-drawer__query-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .search-drawer__query-link {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #333333;
+    text-decoration: none;
+    background: #f7f7f9;
+    transition: background 0.2s ease;
+  }
+
+  .search-drawer__query-link:hover {
+    background: #eeeeee;
+  }
+
+  /* Empty State */
+  .search-drawer__no-results {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .search-drawer__no-results-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+  }
+
+  .search-drawer__no-results-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #111111;
+    margin-bottom: 8px;
+  }
+
+  .search-drawer__no-results-desc {
+    font-size: 0.85rem;
+    color: #777777;
+    margin: 0;
+  }
+
+  /* Footer */
+  .search-drawer__footer {
+    padding: 16px 24px;
+    border-top: 1px solid #eeeeee;
+    background: #ffffff;
+    flex-shrink: 0;
+  }
+
+  .search-drawer__view-all-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: #000000;
+    color: #ffffff;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .search-drawer__view-all-btn:hover {
+    background: #222222;
+  }
+
+  body.search-drawer-open {
+    overflow: hidden;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    var drawer = document.getElementById('SearchDrawer');
+    var input = document.getElementById('SearchDrawerInput');
+    var clearBtn = document.getElementById('SearchDrawerClear');
+    var trendingBox = document.getElementById('SearchDrawerTrending');
+    var skeleton = document.getElementById('SearchDrawerSkeleton');
+    var resultsBox = document.getElementById('SearchDrawerResults');
+    var noResultsBox = document.getElementById('SearchDrawerNoResults');
+    var noResultsTitle = document.getElementById('SearchDrawerNoResultsTitle');
+    var footer = document.getElementById('SearchDrawerFooter');
+    var viewAllLink = document.getElementById('SearchDrawerViewAllLink');
+
+    if (!drawer || !input) return;
+
+    var debounceTimer = null;
+
+    function openDrawer() {
+      drawer.classList.add('is-active');
+      document.body.classList.add('search-drawer-open');
+      setTimeout(function() { input.focus(); }, 150);
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('is-active');
+      document.body.classList.remove('search-drawer-open');
+    }
+
+    // Toggle listeners
+    document.querySelectorAll('[data-action="open-search-drawer"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        openDrawer();
+      });
+    });
+
+    document.querySelectorAll('[data-action="close-search-drawer"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        closeDrawer();
+      });
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && drawer.classList.contains('is-active')) {
+        closeDrawer();
+      }
+    });
+
+    // Trending Tag Click
+    document.querySelectorAll('[data-search-term]').forEach(function(tagBtn) {
+      tagBtn.addEventListener('click', function() {
+        var term = tagBtn.getAttribute('data-search-term');
+        input.value = term;
+        handleSearch(term);
+      });
+    });
+
+    // Clear Button
+    clearBtn.addEventListener('click', function() {
+      input.value = '';
+      clearBtn.style.display = 'none';
+      showTrendingState();
+      input.focus();
+    });
+
+    // Input Input Listener with 300ms Debounce
+    input.addEventListener('input', function() {
+      var query = input.value.trim();
+      if (query.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+        showTrendingState();
+        return;
+      }
+
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function() {
+        handleSearch(query);
+      }, 300);
+    });
+
+    function showTrendingState() {
+      trendingBox.style.display = 'block';
+      skeleton.style.display = 'none';
+      resultsBox.style.display = 'none';
+      noResultsBox.style.display = 'none';
+      footer.style.display = 'none';
+    }
+
+    function showSkeletonState() {
+      trendingBox.style.display = 'none';
+      skeleton.style.display = 'flex';
+      resultsBox.style.display = 'none';
+      noResultsBox.style.display = 'none';
+      footer.style.display = 'none';
+    }
+
+    function handleSearch(query) {
+      if (!query) return;
+
+      showSkeletonState();
+      viewAllLink.href = window.Shopify ? window.Shopify.routes.root + 'search?q=' + encodeURIComponent(query) : '/search?q=' + encodeURIComponent(query);
+
+      var url = (window.Shopify ? window.Shopify.routes.root : '/') + 'search/suggest.json?q=' + encodeURIComponent(query) + '&resources[type]=product,query&resources[limit]=6';
+
+      fetch(url)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          skeleton.style.display = 'none';
+
+          var products = data.resources && data.resources.results ? data.resources.results.products : [];
+          var queries = data.resources && data.resources.results ? data.resources.results.queries : [];
+
+          if (products.length === 0 && queries.length === 0) {
+            noResultsTitle.textContent = '未找到与 "' + query + '" 相关的装备';
+            noResultsBox.style.display = 'block';
+            return;
+          }
+
+          var html = '';
+
+          if (products.length > 0) {
+            html += '<span class="search-drawer__section-label">⚡ 匹配装备 Products</span>';
+            html += '<div class="search-drawer__product-list">';
+
+            products.forEach(function(product) {
+              var priceFormatted = '$' + (product.price ? (parseFloat(product.price)).toFixed(2) : '0.00');
+              var comparePriceFormatted = product.compare_at_price ? '$' + (parseFloat(product.compare_at_price)).toFixed(2) : '';
+
+              html += '<a href="' + product.url + '" class="search-drawer__product-card">';
+              html += '  <img src="' + (product.image || '') + '" alt="' + product.title + '" class="search-drawer__product-img">';
+              html += '  <div class="search-drawer__product-info">';
+              html += '    <span class="search-drawer__product-vendor">' + (product.vendor || 'APEX') + '</span>';
+              html += '    <h4 class="search-drawer__product-title">' + product.title + '</h4>';
+              html += '    <div class="search-drawer__product-price">';
+              html += '      <span>' + priceFormatted + '</span>';
+              if (comparePriceFormatted) {
+                html += '      <span class="search-drawer__product-compare-price">' + comparePriceFormatted + '</span>';
+              }
+              html += '    </div>';
+              html += '  </div>';
+              html += '</a>';
+            });
+
+            html += '</div>';
+          }
+
+          if (queries.length > 0) {
+            html += '<span class="search-drawer__section-label" style="margin-top: 16px;">💡 搜索建议 Suggestions</span>';
+            html += '<div class="search-drawer__query-list">';
+            queries.forEach(function(q) {
+              html += '<a href="' + q.url + '" class="search-drawer__query-link">' + q.text + '</a>';
+            });
+            html += '</div>';
+          }
+
+          resultsBox.innerHTML = html;
+          resultsBox.style.display = 'block';
+          footer.style.display = 'block';
+        })
+        .catch(function(err) {
+          skeleton.style.display = 'none';
+          noResultsTitle.textContent = '搜索出错，请稍后重试';
+          noResultsBox.style.display = 'block';
+        });
+    }
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Predictive Search Drawer",
+  "settings": []
+}
+{% endschema %}

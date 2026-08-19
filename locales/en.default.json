@@ -45,10 +45,12 @@
     "product": {
       "quick_view": "Quick View",
       "add_to_cart": "Add to Cart",
+      "buy_now": "Buy Now",
       "sold_out": "Sold Out",
       "unavailable": "Unavailable",
       "view_full_details": "View Full Details",
-      "close_quick_view": "Close Quick View"
+      "close_quick_view": "Close Quick View",
+      "description": "Product Details"
     }
   },
   "customers": {
@@ -96,10 +98,18 @@
   },
   "search": {
     "title": "Search",
-    "placeholder": "Search articles, pages, or products",
+    "drawer_title": "Search Store & Gear",
+    "placeholder": "Search rackets, shoes, apparel...",
     "submit": "Search",
+    "trending": "Trending Searches",
+    "products_heading": "Matching Gear",
+    "queries_heading": "Suggestions",
+    "no_results": "No results found for \"{{ terms }}\"",
     "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "results_for_html": "{{ count }} results found for {{ terms }}",
+    "no_results_suggestion": "Check your spelling or try one of the popular search tags above",
+    "view_all_results": "View all results",
+    "quick_add": "Quick Add"
   },
   "home": {
     "hero": {

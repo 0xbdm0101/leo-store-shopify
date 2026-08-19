@@ -1,70 +1,410 @@
 {% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/search
+  Apple-Style Sports Search Results Page Section
+  Renders hero search header, result count badges, Apple product card grid, and empty state recommendations.
 {% endcomment %}
 
-<h1>{{ 'search.title' | t }}</h1>
+<div class="sports-search-page full-width">
+  <div class="sports-search-hero">
+    <div class="sports-search-hero__content page-width">
+      <h1 class="sports-search-hero__title">🔍 {{ 'search.title' | t }}</h1>
+      
+      <form action="{{ routes.search_url }}" method="get" role="search" class="sports-search-form">
+        <div class="sports-search-form__wrapper">
+          <svg class="sports-search-form__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
 
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
+          <input type="search"
+                 name="q"
+                 class="sports-search-form__input"
+                 value="{{ search.terms | escape }}"
+                 placeholder="{{ 'search.placeholder' | t }}"
+                 autocomplete="off"
+                 autocorrect="off"
+                 capitalize="off"
+                 spellcheck="false">
 
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
-
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
-            {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
-              </p>
-            </div>
-          </div>
-        {% endfor %}
-
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
+          <button type="submit" class="sports-search-form__btn">
+            {{ 'search.submit' | t }}
+          </button>
+        </div>
+      </form>
     </div>
-  {% endif %}
-{% endif %}
+  </div>
+
+  <div class="sports-search-container page-width">
+    {%- if search.performed -%}
+      {%- if search.results_count == 0 -%}
+        <!-- Empty Results State -->
+        <div class="sports-search-empty">
+          <div class="sports-search-empty__icon">🔍</div>
+          <h2 class="sports-search-empty__title">{{ 'search.no_results' | t: terms: search.terms }}</h2>
+          <p class="sports-search-empty__desc">{{ 'search.no_results_suggestion' | t }}</p>
+          
+          <div class="sports-search-empty__tags">
+            <span class="sports-search-empty__tags-label">🔥 {{ 'search.trending' | t }}:</span>
+            <a href="{{ routes.search_url }}?q=羽球拍" class="sports-search-empty__tag">🏸 羽球拍 Rackets</a>
+            <a href="{{ routes.search_url }}?q=运动鞋" class="sports-search-empty__tag">👟 运动鞋 Shoes</a>
+            <a href="{{ routes.search_url }}?q=比赛服" class="sports-search-empty__tag">🎽 比赛服 Jerseys</a>
+            <a href="{{ routes.search_url }}?q=护具" class="sports-search-empty__tag">🛡️ 护具 Guards</a>
+          </div>
+        </div>
+      {%- else -%}
+        <!-- Search Meta Count Bar -->
+        <div class="sports-search-meta">
+          <span class="sports-search-meta__badge">
+            ⚡ {{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}
+          </span>
+        </div>
+
+        <!-- Search Results Grid -->
+        {% paginate search.results by 12 %}
+          <div class="sports-search-grid">
+            {% for item in search.results %}
+              {% if item.object_type == 'product' %}
+                {% render 'sports-product-card', product: item %}
+              {% else %}
+                <div class="sports-search-article-card">
+                  <span class="sports-search-article-card__badge">{{ item.object_type | upcase }}</span>
+                  <h3 class="sports-search-article-card__title">
+                    <a href="{{ item.url }}">{{ item.title | escape }}</a>
+                  </h3>
+                  <p class="sports-search-article-card__excerpt">{{ item.content | strip_html | truncatewords: 24 }}</p>
+                  <a href="{{ item.url }}" class="sports-search-article-card__link">查看详情 Read More &rarr;</a>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          {%- if paginate.pages > 1 -%}
+            <div class="sports-search-pagination">
+              {{ paginate | default_pagination }}
+            </div>
+          {%- endif -%}
+        {% endpaginate %}
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
 
 {% stylesheet %}
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  .sports-search-page {
+    width: 100%;
+    min-height: 70vh;
+    padding-bottom: 80px;
+    background-color: #fafafa;
   }
-  .search-results .prev,
-  .search-results .page,
-  .search-results .next {
-    grid-column: 1 / -1;
+
+  /* Hero Banner Header */
+  .sports-search-hero {
+    background: linear-gradient(135deg, #111111 0%, #1a1a2e 50%, #16213e 100%);
+    color: #ffffff;
+    padding: 60px 0 70px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .sports-search-hero__content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .sports-search-hero__title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: #ffffff;
+  }
+
+  /* Search Form */
+  .sports-search-form {
+    width: 100%;
+  }
+
+  .sports-search-form__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 999px;
+    padding: 6px 6px 6px 20px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .sports-search-form__icon {
+    color: #777777;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+
+  .sports-search-form__input {
+    flex: 1;
+    height: 44px;
+    border: none;
+    background: transparent;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111111;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .sports-search-form__input::-webkit-search-decoration,
+  .sports-search-form__input::-webkit-search-cancel-button,
+  .sports-search-form__input::-webkit-search-results-button,
+  .sports-search-form__input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  .sports-search-form__btn {
+    height: 46px;
+    padding: 0 28px;
+    border-radius: 999px;
+    background: #000000;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .sports-search-form__btn:hover {
+    background: #222222;
+    transform: scale(1.02);
+  }
+
+  /* Search Container & Meta Bar */
+  .sports-search-container {
+    max-width: 1280px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+  }
+
+  .sports-search-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .sports-search-meta__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: #ffffff;
+    border: 1px solid #e5e5ea;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #111111;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Product Results Grid */
+  .sports-search-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+  }
+
+  /* Article/Page Result Card */
+  .sports-search-article-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #eeeeee;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s ease;
+  }
+
+  .sports-search-article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  }
+
+  .sports-search-article-card__badge {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f0f0f4;
+    color: #555555;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  .sports-search-article-card__title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .sports-search-article-card__title a {
+    color: #111111;
+    text-decoration: none;
+  }
+
+  .sports-search-article-card__excerpt {
+    font-size: 0.88rem;
+    color: #666666;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .sports-search-article-card__link {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #000000;
+    text-decoration: none;
+    margin-top: auto;
+  }
+
+  /* Empty State */
+  .sports-search-empty {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid #e5e5ea;
+    padding: 60px 24px;
+    text-align: center;
+    max-width: 680px;
+    margin: 20px auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  .sports-search-empty__icon {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+  }
+
+  .sports-search-empty__title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111111;
+    margin-bottom: 10px;
+  }
+
+  .sports-search-empty__desc {
+    font-size: 0.95rem;
+    color: #666666;
+    margin-bottom: 28px;
+  }
+
+  .sports-search-empty__tags {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .sports-search-empty__tags-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #888888;
+    margin-right: 4px;
+  }
+
+  .sports-search-empty__tag {
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid #e0e0e6;
+    background: #f7f7f9;
+    color: #222222;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .sports-search-empty__tag:hover {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+    transform: translateY(-2px);
+  }
+
+  /* Pagination */
+  .sports-search-pagination {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .sports-search-pagination .pagination {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .sports-search-pagination a,
+  .sports-search-pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e6;
+    background: #ffffff;
+    color: #111111;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .sports-search-pagination .current {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+  }
+
+  @media (max-width: 768px) {
+    .sports-search-hero {
+      padding: 40px 0 50px;
+    }
+
+    .sports-search-hero__title {
+      font-size: 1.6rem;
+    }
+
+    .sports-search-form__wrapper {
+      padding: 4px 4px 4px 16px;
+    }
+
+    .sports-search-form__btn {
+      height: 40px;
+      padding: 0 20px;
+      font-size: 0.88rem;
+    }
+
+    .sports-search-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.search",
+  "name": "Sports Search Page",
   "settings": []
 }
 {% endschema %}

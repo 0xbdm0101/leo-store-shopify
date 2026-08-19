@@ -8,5 +8,22 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "sections": {
+      "cart-drawer": {
+        "type": "cart-drawer",
+        "settings": {
+          "show_shipping_bar": true,
+          "free_shipping_threshold": 100,
+          "show_upsell": true,
+          "upsell_collection": "羽毛球球拍"
+        }
+      },
+      "quick-view-modal": {
+        "type": "quick-view-modal",
+        "settings": {}
+      }
+    },
+    "content_for_index": []
+  }
 }
